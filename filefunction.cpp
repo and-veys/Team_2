@@ -11,7 +11,7 @@ fileFunction::fileFunction()
 }
 
 /**/
-void fileFunction::slotSaveFile(QTextEdit* textEdit){
+void fileFunction::slotSaveFile(QString* textEdit){
     if(file.fileName()==":/help/Help.txt")return;//Если открыт файл спарвки, то выходим
     if(file.isOpen()){//Если файт был открыт, сохраняем его. Если файл был создан, то запускаем функцию сохранить как.
         if(file.openMode() == QIODevice::ReadOnly){//Если файл был открыт только для чтения, то выходим, иначе сохраняем его.
@@ -20,24 +20,22 @@ void fileFunction::slotSaveFile(QTextEdit* textEdit){
         }
         else{
             qDebug()<<"Save";
-            QString text = textEdit->toPlainText();
-            QByteArray ba = text.toUtf8();
+            QByteArray ba = textEdit->toUtf8();
             file.write(ba,ba.size());
        }
     }
     else{
-        if(textEdit->toPlainText() != "") slotSaveFileAs(textEdit);//
+        if(textEdit->size() > 0) slotSaveFileAs(textEdit);//
    }
 }
 
 /**/
-void fileFunction::slotSaveFileAs(QTextEdit* textEdit){
+void fileFunction::slotSaveFileAs(QString* textEdit){
     QString fileName = QFileDialog::getSaveFileName(nullptr,("Сохраниеть как.."), "/", ("Тип файла (*.txt)"));
     QFile file;
     file.setFileName(fileName);
     if(file.open(QIODevice::WriteOnly)){
-        QString text = textEdit->toPlainText();
-        QByteArray ba = text.toUtf8();
+        QByteArray ba = textEdit->toUtf8();
         file.write(ba,ba.size());
     }
 }
@@ -45,6 +43,9 @@ void fileFunction::slotSaveFileAs(QTextEdit* textEdit){
 
 /*
 Открытие файла
+
+!!!!Аргументом метода наверное нужен указатель на текстовой поле, куда выводить полученный из файла текст
+
 */
 void fileFunction::slotOpenFile(QTextEdit* textEdit){
     QString fileName = QFileDialog::getOpenFileName(nullptr,("Открыть файл"), "/", ("Тип файла (*.txt)"));//Указали путь к файлу
@@ -59,9 +60,11 @@ void fileFunction::slotOpenFile(QTextEdit* textEdit){
 
 /*
 Закрытие файла
+
 */
 void fileFunction::slotCloseFile(QTextEdit* textEdit ){
-    slotSaveFile(textEdit);
+    QString str = textEdit->toPlainText();
+    slotSaveFile(&str);
     file.close();
     textEdit->clear();
     textEdit->setEnabled(false);

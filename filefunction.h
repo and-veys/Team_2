@@ -13,9 +13,9 @@ public:
     fileFunction();
 
 public slots:
-    void slotSaveFile(QTextEdit* textEdit);
-    void slotSaveFileAs(QTextEdit* textEdit);
-    void slotOpenFile(QTextEdit* textEdit);
+    void slotSaveFile(QString *textEdit);
+    void slotSaveFileAs(QString *textEdit);
+    void slotOpenFile(QTextEdit *textEdit);
     void slotCloseFile(QTextEdit* textEdit);
     void slotExitProgramm(QTextEdit* textEdit);
     void slotCreateNewDoc(QTextEdit* textEdit);
