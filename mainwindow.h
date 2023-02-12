@@ -4,6 +4,10 @@
 #include <QMainWindow>
 #include "textdata.h"
 
+class QPlainTextEdit;
+class QPushButton;
+class EditWindow;
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -11,6 +15,7 @@ QT_END_NAMESPACE
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
+    EditWindow* MainEdit;
 
 public:
     MainWindow(QWidget *parent = nullptr);
