@@ -4,21 +4,27 @@
 #include <QColor>
 #include <QMap>
 #include <QObject>
+#include <QTextCharFormat>
 
-class ParameterImportance {
+class ParametersTag {
+public:
+    ParametersTag(QString tag, QColor col);
+    ~ParametersTag();
+    QString startTag;
+    QTextCharFormat lineFormat;
+};
+
+class ParameterImportance : public ParametersTag {
 public:
     ParameterImportance(QString name, QString tag, QColor col);
+    ~ParameterImportance();
     QString nameImportance;
-    QString startTag;
-    QString endTag;
-    QColor color;
 };
-class ParameterHide {
+class ParameterHide : public ParametersTag {
 public:
-    ParameterHide(QString txt, QString tag  = "hide");
+    ParameterHide(QString txt, QString tag, QColor col) ;
+    ~ParameterHide();
     QString replacingText;
-    QString startTag;
-    QString endTag;
 };
 
 
@@ -28,13 +34,11 @@ public:
     TextData();
     ~TextData();
 private:
-    QString data;
+    QMap<QString, QString> hidden_string;
     QMap<QString, ParameterImportance *> parametersImportance;
     ParameterHide * parametersHide;
 public:
-    ParameterImportance * getParameterImportance(const QString & key){
-        return (parametersImportance.contains(key) ? parametersImportance.take(key) : nullptr);
-    };
+    ParameterImportance * getParameterImportance(const QString & key);
     ParameterHide * getParameterHide(){return parametersHide;};
 };
 

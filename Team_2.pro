@@ -19,13 +19,14 @@ SOURCES += \
     edit_window.cpp \
     main.cpp \
     mainwindow.cpp \
-    textdata.cpp
+    textdata.cpp \
+    filefunction.cpp
 
 HEADERS += \
-
-    edit_window.h
-    mainwindow.h
-    textdata.h
+    edit_window.h \
+    mainwindow.h \
+    textdata.h \
+    filefunction.h
 
 FORMS += \
     mainwindow.ui

@@ -3,13 +3,10 @@
 
 #include "edit_window.h"
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
-//    ui->setupUi(this);
-    MainEdit = new EditWindow(this);
-    setCentralWidget(MainEdit);
+    mainEdit = new EditWindow(this);
+    setCentralWidget(mainEdit);
 
 
     /*
@@ -22,6 +19,6 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-//    delete ui;
+
 }
 
