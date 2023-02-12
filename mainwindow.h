@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "textdata.h"
 
 class QPlainTextEdit;
 class QPushButton;
@@ -22,5 +23,6 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    TextData textData;
 };
 #endif // MAINWINDOW_H
