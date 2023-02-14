@@ -18,12 +18,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     edit_window.cpp \
     main.cpp \
+    mainmenu.cpp \
     mainwindow.cpp \
     textdata.cpp \
     filefunction.cpp
 
 HEADERS += \
     edit_window.h \
+    mainmenu.h \
     mainwindow.h \
     textdata.h \
     filefunction.h
