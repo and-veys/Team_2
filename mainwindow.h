@@ -5,9 +5,12 @@
 #include "textdata.h"
 #include <QDebug>
 
+#include "search_widgets.h"
+
 class QPlainTextEdit;
 class QPushButton;
 class EditWindow;
+
 
 
 
@@ -30,5 +33,10 @@ private slots:
     void test_2(bool a) {qDebug() << "OK:" << (a?"+":"-");};
     void test_3(QString a) {qDebug() << "TAG:" << a;};
     //---------------------------------------------------
+
+    void search_string_slot();
+    void search_importance_slot();
+
+
 };
 #endif // MAINWINDOW_H

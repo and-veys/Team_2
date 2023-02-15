@@ -4,6 +4,7 @@
 #include "edit_window.h"
 #include "mainmenu.h"
 
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
     mainEdit = new EditWindow(this);
@@ -17,13 +18,26 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(menu, SIGNAL(loadDocument()), this, SLOT(test()));
     connect(menu, SIGNAL(saveDocument(bool)), this, SLOT(test_2(bool)));
     connect(menu, SIGNAL(closeDocument()), this, SLOT(test()));
-    connect(menu, SIGNAL(searchString()), this, SLOT(test()));
-    connect(menu, SIGNAL(searchImportance()), this, SLOT(test()));
+    connect(menu, SIGNAL(searchString()), this, SLOT(search_string_slot()));
+    connect(menu, SIGNAL(searchImportance()), this, SLOT(search_importance_slot()));
     connect(menu, SIGNAL(setImportance(QString)), this, SLOT(test_3(QString)));
     connect(menu, SIGNAL(hideText(bool)), this, SLOT(test_2(bool)));
     connect(menu, SIGNAL(helpShow(QString)), this, SLOT(test_3(QString)));
 //---------------------------------------------------
 }
+
+//Тесты сигналов поиска
+void MainWindow::search_string_slot() {
+    auto search_window = new SearchWidgetString(QString("Поиск"));
+    connect(search_window, &SearchWidgetString::searchPrev, mainEdit, &EditWindow::test_search_prev_slot);
+    connect(search_window, &SearchWidgetString::searchNext, mainEdit, &EditWindow::test_search_next_slot);
+}
+void MainWindow::search_importance_slot() {
+    auto search_window = new SearchWidgetImportance(QString("Поиск"), textData);
+    connect(search_window, &SearchWidgetString::searchPrev, mainEdit, &EditWindow::test_search_prev_slot);
+    connect(search_window, &SearchWidgetString::searchNext, mainEdit, &EditWindow::test_search_next_slot);
+}
+//---------------------------------------------------
 
 MainWindow::~MainWindow()
 {
