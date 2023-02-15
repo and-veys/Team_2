@@ -25,6 +25,7 @@ private:
     TextData textData;
 
 private slots:
+    void setImportance(QString tag);
     //TODO ------------ Тесты функциональности, потом удалить
     void test() {qDebug() << "OK";};
     void test_2(bool a) {qDebug() << "OK:" << (a?"+":"-");};
