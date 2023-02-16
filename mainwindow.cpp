@@ -3,6 +3,7 @@
 
 #include "edit_window.h"
 #include "mainmenu.h"
+#include "statusbar.h" // WND9-11
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -11,6 +12,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     this->resize(500, 200);
     MainMenu * menu = new MainMenu(this, &textData);
     setMenuBar(menu);
+
+    Team2StatusBar * stBar = new Team2StatusBar(this);
+    setStatusBar(stBar);
+    stBar->addLabels(stBar);
+
 //---------------------------------------------------
 //Подставляйте свои receiver-объекты и их слоты
     connect(menu, SIGNAL(createDocument()), this, SLOT(test()));
@@ -21,7 +27,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(menu, SIGNAL(searchImportance()), this, SLOT(test()));
     connect(menu, SIGNAL(setImportance(QString)), this, SLOT(test_3(QString)));
     connect(menu, SIGNAL(hideText(bool)), this, SLOT(test_2(bool)));
+    connect(menu, SIGNAL(unhideText(bool)), this, SLOT(test_2(bool)));
     connect(menu, SIGNAL(helpShow(QString)), this, SLOT(test_3(QString)));
+    connect(menu, SIGNAL(aboutUsShow(QString)), this, SLOT(test_3(QString)));
 //---------------------------------------------------
 }
 

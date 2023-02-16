@@ -23,7 +23,7 @@ MainMenu::MainMenu(QWidget * par, TextData * dt):QMenuBar(par)
 
     menu = new QMenu("Скрытость");
     menu->addAction("скрыть", [this]{emit hideText(true);});
-    menu->addAction("показать", [this]{emit hideText(false);});
+    menu->addAction("показать", [this]{emit unhideText(false);});
     addMenu(menu);
 
     menu = new QMenu("Поиск");
@@ -33,6 +33,6 @@ MainMenu::MainMenu(QWidget * par, TextData * dt):QMenuBar(par)
 
     menu = new QMenu("Справка");
     menu->addAction("помощь", [this]{emit helpShow("help");});
-    menu->addAction("о нас", [this]{emit helpShow("about");});
+    menu->addAction("о нас", [this]{emit aboutUsShow("about");});
     addMenu(menu);
 }
