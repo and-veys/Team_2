@@ -2,35 +2,78 @@
 #include <QDebug>
 TextData::TextData()
 {
-    data = "";
-    parametersHide = new ParameterHide("[...]");
-    parametersImportance.insert("low_imp", new ParameterImportance("не важно", "low_imp", QColor(0,255,0)));
-    parametersImportance.insert("imp", new ParameterImportance("важно", "imp", QColor(0,0,255)));
-    parametersImportance.insert("high_imp", new ParameterImportance("очень важно", "high_imp", QColor(255,0,0)));
+    //параметры спрятанного текста
+    parametersHide = new ParameterHide("[...]", "<hide>", Qt::gray);
+
+    //параметры важности текста в порядке значимости
+    auto addImportance = [this](QString tag, QString nm, QColor col){
+        QString key  = "<" + tag.toUpper() + ">";
+        this->parametersImportance.insert(key, new ParameterImportance(nm, key, col));
+    };
+    addImportance("normal", "обычный текст",  Qt::black);
+    addImportance("low_imp", "не важный текст",  Qt::green);
+    addImportance("imp", "важный текст",  Qt::blue);
+    addImportance("high_imp", "очень важный текст",  Qt::red);
 }
 
 
 TextData::~TextData()
 {
-    //qDebug() << getParameterImportance("imp")->nameImportance;
-    //qDebug() << getParameterHide()->replacingText;
-
     delete parametersHide;
     foreach(auto dt, parametersImportance)
         delete dt;
 }
+int ParameterImportance::count = 0;
 
-ParameterHide::ParameterHide(QString txt, QString tag)
+ParameterImportance *TextData::getParameterImportance(const QString &key)
+{
+    return (parametersImportance.contains(key) ? parametersImportance.take(key) : parametersImportance.take("normal"));
+
+}
+
+QList<ParameterImportance *> TextData::getSortListImportance()      //сортировка важности по id
+{
+    QList<ParameterImportance *> list;
+    foreach(auto dt, parametersImportance)
+        list.push_back(dt);
+    auto sort = [](ParameterImportance * a, ParameterImportance * b){return (a->id < b->id);};
+    std::sort(list.begin(), list.end(), sort);
+    return list;
+}
+
+
+ParametersTag::ParametersTag(QString tag, QColor col)
+{
+    lineFormat.setBackground(col);
+    lineFormat.setProperty(1, tag);
+}
+
+ParametersTag::~ParametersTag()
+{
+   //qDebug() << startTag;
+
+}
+
+ParameterHide::ParameterHide(QString txt, QString tag, QColor col) : ParametersTag(tag, col)
 {
     replacingText = txt;
-    startTag = "<" + tag.toUpper() + ">";
-    endTag = "</" + tag.toUpper() + ">";
 }
 
-ParameterImportance::ParameterImportance(QString name, QString tag, QColor col)
+ParameterHide::~ParameterHide()
+{
+    //qDebug() << replacingText;
+
+}
+
+ParameterImportance::ParameterImportance(QString name, QString tag, QColor col) : ParametersTag(tag, col)
 {
     nameImportance = name;
-    color = col;
-    startTag = "<" + tag.toUpper() + ">";
-    endTag = "</" + tag.toUpper() + ">";
+    id = count++;
 }
+
+ParameterImportance::~ParameterImportance()
+{
+    //qDebug() << nameImportance << id << " - " << count;
+}
+
+

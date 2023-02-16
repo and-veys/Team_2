@@ -16,13 +16,21 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    edit_window.cpp \
     main.cpp \
+    mainmenu.cpp \
     mainwindow.cpp \
-    textdata.cpp
+    statusbar.cpp \
+    textdata.cpp \
+    filefunction.cpp
 
 HEADERS += \
+    edit_window.h \
+    mainmenu.h \
     mainwindow.h \
-    textdata.h
+    statusbar.h \
+    textdata.h \
+    filefunction.h
 
 FORMS += \
     mainwindow.ui

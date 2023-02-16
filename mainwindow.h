@@ -3,21 +3,33 @@
 
 #include <QMainWindow>
 #include "textdata.h"
+#include <QDebug>
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
-QT_END_NAMESPACE
+
+class QPlainTextEdit;
+class QPushButton;
+class EditWindow;
+
+
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
+
 
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
 private:
-    Ui::MainWindow *ui;
+    EditWindow* mainEdit;
     TextData textData;
+
+private slots:
+    //TODO ------------ Тесты функциональности, потом удалить
+    void test() {qDebug() << "OK";};
+    void test_2(bool a) {qDebug() << "OK:" << (a?"+":"-");};
+    void test_3(QString a) {qDebug() << "TAG:" << a;};
+    //---------------------------------------------------
 };
 #endif // MAINWINDOW_H
