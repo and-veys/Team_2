@@ -6,6 +6,7 @@
 #include <QDebug>
 
 #include "search_widgets.h"
+#include <memory>
 
 class QPlainTextEdit;
 class QPushButton;
@@ -26,6 +27,8 @@ public:
 private:
     EditWindow* mainEdit;
     TextData textData;
+    std::unique_ptr<SearchWidgetString> searchWidgetString;
+    std::unique_ptr<SearchWidgetImportance> searchWidgetImportance;
 
 private slots:
     //TODO ------------ Тесты функциональности, потом удалить

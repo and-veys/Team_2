@@ -12,6 +12,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     this->resize(500, 200);
     MainMenu * menu = new MainMenu(this, &textData);
     setMenuBar(menu);
+
+    searchWidgetString.reset( new SearchWidgetString(QString("Поиск")));
+    searchWidgetString->hide();
+    searchWidgetImportance.reset(new SearchWidgetImportance(QString("Поиск"), textData));
+    searchWidgetImportance->hide();
+
+    connect(searchWidgetString.get(), &SearchWidgetString::searchPrev, mainEdit, &EditWindow::test_search_prev_slot);
+    connect(searchWidgetString.get(), &SearchWidgetString::searchNext, mainEdit, &EditWindow::test_search_next_slot);
+    connect(searchWidgetImportance.get(), &SearchWidgetString::searchPrev, mainEdit, &EditWindow::test_search_prev_slot);
+    connect(searchWidgetImportance.get(), &SearchWidgetString::searchNext, mainEdit, &EditWindow::test_search_next_slot);
 //---------------------------------------------------
 //Подставляйте свои receiver-объекты и их слоты
     connect(menu, SIGNAL(createDocument()), this, SLOT(test()));
@@ -28,14 +38,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 //Тесты сигналов поиска
 void MainWindow::search_string_slot() {
-    auto search_window = new SearchWidgetString(QString("Поиск"));
-    connect(search_window, &SearchWidgetString::searchPrev, mainEdit, &EditWindow::test_search_prev_slot);
-    connect(search_window, &SearchWidgetString::searchNext, mainEdit, &EditWindow::test_search_next_slot);
+    searchWidgetString->show();
 }
 void MainWindow::search_importance_slot() {
-    auto search_window = new SearchWidgetImportance(QString("Поиск"), textData);
-    connect(search_window, &SearchWidgetString::searchPrev, mainEdit, &EditWindow::test_search_prev_slot);
-    connect(search_window, &SearchWidgetString::searchNext, mainEdit, &EditWindow::test_search_next_slot);
+    searchWidgetImportance->show();
 }
 //---------------------------------------------------
 

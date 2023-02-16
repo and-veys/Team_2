@@ -66,7 +66,6 @@ void SearchWidgetImportance::create_data_widget()
 
    connect(data_combobox, &QComboBox::currentIndexChanged, this, [this, data_combobox](){ searcheble_text = data_combobox->currentData().toString();});
 
-   show();
 }
 
 
@@ -98,7 +97,6 @@ void SearchWidgetString::create_data_widget()
 
     connect(data_lineedit, &QLineEdit::textChanged, this, [this, data_lineedit](){ searcheble_text = data_lineedit->text();});
 
-    show();
 }
 
 

@@ -53,6 +53,7 @@ class SearchWidgetString: public AbstractSearchWidget {
 
 public:
     SearchWidgetString(const QString& label=QString(), QWidget * parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
+
 };
 
 #endif // SEARCHWIDGET_H
