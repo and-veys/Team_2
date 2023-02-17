@@ -71,6 +71,7 @@ void SearchWidgetImportance::AMV_FUNC_1(int ind) //только переимен
 {
     auto data_combobox = dynamic_cast<QComboBox*>(data_widget);
     searcheble_text = data_combobox->currentData().toString();
+
 }
 
 

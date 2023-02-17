@@ -66,8 +66,5 @@ MainWindow::~MainWindow()
 
 void MainWindow::setImportance(QString tag)
 {
-    textData.setImportance(mainEdit, tag);
+   textData.setImportance(mainEdit, tag);
 }
-
-
-
