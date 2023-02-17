@@ -32,10 +32,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(&textData, SIGNAL(errorSetFormat(QString)), this, SLOT(selectInformation(QString))); //информация о неуспешном выделении текста
     connect(mainEdit, SIGNAL(isForbiddenKey(QKeyEvent *)), &textData, SLOT(isForbiddenKey(QKeyEvent *))); //запрет клавиш и мест
 //---------------------------------------------------
-// TODO удалить, это для теста---------------------------------------------------
-    QString test_S = "Раз-Два-Три\nOne-Two-Three\nEin-Zwei-Drei";
-   mainEdit->setPlainText(test_S);
-//---------------------------------------------------
 }
 
 MainWindow::~MainWindow()
@@ -63,16 +59,7 @@ void MainWindow::selectInformation(QString inf)
    QMessageBox::information(this, "You can`t do that", inf);
 }
 
-//TODO test, надо удалить
-void MainWindow::test_3(QString a) {
-    QTextCursor ch = mainEdit->textCursor();
-    QString aa =ch.charFormat().property(1).toString();
 
-    qDebug() << "TAG:" << aa << "BL:" <<ch.blockNumber();
-    qDebug() << "BLP:" << ch.positionInBlock() << ":" << "POS:" << ch.position();
-
-
-}
 
 
 

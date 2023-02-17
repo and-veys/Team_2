@@ -12,7 +12,7 @@ TextData::TextData() : QObject()
         QString key  = "<" + tag.toUpper() + ">";
         parametersImportance.insert(key, new ParameterImportance(nm, key, col));
     };
-    addImportance("normal", "Обычный текст",  Qt::magenta);
+    addImportance("normal", "Обычный текст",  Qt::white);
     addImportance("low_imp", "Не важный текст",  Qt::yellow);
     addImportance("imp", "Важный текст",  Qt::green);
     addImportance("high_imp", "Очень важный текст",  Qt::red);
@@ -62,7 +62,7 @@ void TextData::setImportance(QPlainTextEdit * wnd, QString & tag)
         sendErrorSignal(NOT_SELECT);
         return;
     }
-    if(parametersHide->hasCharsFormat(cursor)) {                           //TODO протестировать
+    if(parametersHide->hasCharsFormat(cursor)) {
         sendErrorSignal(HIDE_SELECT);
         return;
     }
@@ -80,13 +80,14 @@ void TextData::showText(QPlainTextEdit *wnd)
         sendErrorSignal(SOME_SELECT);
         return;
     }
-    if(!parametersHide->hasCharsFormat(cursor)) {
+    if(!parametersHide->findCharsFormat(cursor)) {
         sendErrorSignal(NOT_HIDE);
         return;
     }
-    //TODO
-
-
+    wnd->setTextCursor(cursor);
+    QTextCharFormat ch = cursor.charFormat();
+    getNormalText()->setParameters(ch);
+    cursor.insertText(hiddenString.take(parametersHide->getHideKey(cursor)), ch);
 }
 
 void TextData::hideText(QPlainTextEdit *wnd)
@@ -114,14 +115,12 @@ void TextData::hideText(QPlainTextEdit *wnd)
 
 bool TextData::isForbiddenKey(QKeyEvent * event)
 {
-
-
     QPlainTextEdit * wnd = qobject_cast<QPlainTextEdit *>(sender());
     QTextCursor cursor = wnd->textCursor();
     Qt::KeyboardModifiers mod = event->modifiers();
     int key = event->key();
 
-    if((mod == Qt::ControlModifier && key == 86) || (mod == Qt::ShiftModifier && key == Qt::Key_Insert)) return true;
+    if((mod == Qt::ControlModifier && key == 86) || (mod == Qt::ShiftModifier && key == Qt::Key_Insert)) return true; //запрет paste
     if(key == 60 || key == 62) return true;                             //запрет на '<' и '>'
     if(event->text().length() == 0) return false;                       //всякая навигация
 
@@ -164,6 +163,33 @@ void ParametersTag::setParameters(QTextCharFormat &ch)
     ch.setForeground(col);
     ch.setBackground(color);
     ch.setProperty(1, tag);
+}
+
+bool ParametersTag::findCharsFormat(QTextCursor &cursor)
+{
+    QString tag = getTag();
+    QString cur_tag = tag;
+
+    int start = findLimitFormat(cursor, false);
+    int end = findLimitFormat(cursor, true);
+    if(start == end) return false;
+    cursor.setPosition(start);
+    cursor.setPosition(end, QTextCursor::KeepAnchor);
+    return true;
+}
+
+int ParametersTag::findLimitFormat(QTextCursor cursor, bool next)
+{
+    QTextCursor::MoveOperation move = (next ? QTextCursor::NextCharacter : QTextCursor::PreviousCharacter);
+    QString tag = getTag();
+    QString cur_tag = tag;
+    if(getTag(cursor.charFormat()) != tag) return cursor.position();
+
+    while(tag == cur_tag) {
+        if(!cursor.movePosition(move)) return cursor.position();
+        cur_tag = getTag(cursor.charFormat());
+    }
+    return cursor.position() - (next ? 1 : 0);
 }
 
 bool ParametersTag::isCharFormat(QTextCursor & cursor, bool all) {
@@ -210,16 +236,16 @@ int ParameterHide::getPlaceCursor(QTextCursor cursor, QTextCharFormat &ch)
     QString cur_tag = getTag(ch);
 
     if(cursor.positionInBlock() == 0)
-        return (tag == cur_tag ? TextData::placeEnum::START | TextData::placeEnum::NORMAL : TextData::placeEnum::NORMAL);
+        return (tag == cur_tag ? TextData::START | TextData::NORMAL : TextData::NORMAL);
     if(!cursor.movePosition(QTextCursor::NextCharacter))
-        return (cur_tag == tag ? TextData::placeEnum::END | TextData::placeEnum::NORMAL : TextData::placeEnum::NOT);
+        return (cur_tag == tag ? TextData::END | TextData::NORMAL : TextData::NOT);
 
     ch = cursor.charFormat();
     QString new_tag = getTag(ch);
-    if(cur_tag != tag && new_tag == tag) return TextData::placeEnum::START;
-    if(cur_tag == tag && new_tag == tag) return TextData::placeEnum::CENTER;
-    if(cur_tag == tag && new_tag != tag) return TextData::placeEnum::END;
-    return TextData::placeEnum::NOT;
+    if(cur_tag != tag && new_tag == tag) return TextData::START;
+    if(cur_tag == tag && new_tag == tag) return TextData::CENTER;
+    if(cur_tag == tag && new_tag != tag) return TextData::END;
+    return TextData::NOT;
 }
 
 //class ParameterImportance --------------------------------------------------------------------------

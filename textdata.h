@@ -64,6 +64,8 @@ public:
     void setParameters(QTextCharFormat & ch);
     bool hasCharsFormat(QTextCursor cursor){return isCharFormat(cursor, false);};       //хоть один символ формата объекта
     bool allCharsFormat(QTextCursor cursor){return isCharFormat(cursor, true);};        //все символы формата объекта
+    bool findCharsFormat(QTextCursor& cursor);                  //выделение строки текущего формат
+    int findLimitFormat(QTextCursor cursor, bool next);
 
 private:
     QColor color;
@@ -89,6 +91,7 @@ public:
     QString getReplacingText(){return replacingText;};
     int setParameters(QTextCharFormat & ch);
     int getPlaceCursor(QTextCursor cursor, QTextCharFormat & ch);
+    int getHideKey(QTextCursor & cursor){return cursor.charFormat().property(2).toInt();};
 private:
     QString replacingText;
     static int id;        //для уникального идентификатора спрятанного текста

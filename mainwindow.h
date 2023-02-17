@@ -31,7 +31,7 @@ private slots:
     //TODO ------------ Тесты функциональности, потом удалить
     void test() {qDebug() << "OK";};
     void test_2(bool a) {qDebug() << "OK:" << (a?"+":"-");};
-    void test_3(QString a);;
+    void test_3(QString a){qDebug() << "TAG:" << a;};
     //---------------------------------------------------
 };
 #endif // MAINWINDOW_H
