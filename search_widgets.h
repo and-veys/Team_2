@@ -33,6 +33,7 @@ signals:
 
 class SearchWidgetImportance: public AbstractSearchWidget {
 
+    Q_OBJECT
     void create_data_widget() override;
     TextData td;
 
@@ -42,6 +43,8 @@ public:
             const TextData& td,
             QWidget * parent = nullptr,
             Qt::WindowFlags f = Qt::WindowFlags());
+public slots:
+    void AMV_FUNC_1(int ind);
 
 };
 
