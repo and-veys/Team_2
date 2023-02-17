@@ -8,6 +8,8 @@
 #include "search_widgets.h"
 #include <memory>
 
+#include "filefunction.h"
+
 class QPlainTextEdit;
 class QPushButton;
 class EditWindow;
@@ -30,6 +32,8 @@ private:
     std::unique_ptr<SearchWidgetString> searchWidgetString;
     std::unique_ptr<SearchWidgetImportance> searchWidgetImportance;
 
+    FileFunction *fileFunction;//Вихров
+
 private slots:
     void setImportance(QString tag);
     //TODO ------------ Тесты функциональности, потом удалить
@@ -41,6 +45,17 @@ private slots:
     void search_string_slot();
     void search_importance_slot();
 
+
+    //Вихров
+public slots:
+    void slotRcvFileData(QString *text);
+    void slotSaveDocument(bool action);
+    void slotCreateDocument();
+    void slotCloceDocument();
+signals:
+    void signalSaveDocument(QString *text);
+    void signalSaveDocumentAs(QString *text);
+    void signalCloseDocument(QString *text);
 
 };
 #endif // MAINWINDOW_H

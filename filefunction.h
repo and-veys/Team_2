@@ -3,25 +3,34 @@
 
 #include <QFileDialog>
 #include <QFile>
+#include <QObject>
 #include <QWidget>
 #include <QTextEdit>
 
-
-class fileFunction
+class FileFunction : public QWidget
 {
+    Q_OBJECT
 public:
-    fileFunction();
+    explicit FileFunction(QWidget *parent = nullptr);
+
+
+signals:
+    void signalFileDataReady(QString *text);//Излучаем когда прочитали данные из файла
+    void signalFileCloseCompleet();//Излучаем когда закрыли файл(ну вдруг пригодится..., например чтобы текстовые поля почистить)
 
 public slots:
-    void slotSaveFile(QTextEdit* textEdit);
-    void slotSaveFileAs(QTextEdit* textEdit);
-    void slotOpenFile(QTextEdit* textEdit);
-    void slotCloseFile(QTextEdit* textEdit);
-    void slotExitProgramm(QTextEdit* textEdit);
-    void slotCreateNewDoc(QTextEdit* textEdit);
-    void slotOpenForReadOnly_clicked(QTextEdit *textEdit);
+
+    void slotOpenFile();
+    void slotSaveFile(QString *data);
+    void slotSaveFileAs(QString *data);
+    void slotCloseFile(QString *data);
+//    void slotExitProgramm(QTextEdit* textEdit);
+//    void slotCreateNewDoc(QTextEdit* textEdit);
+//    void slotOpenForReadOnly_clicked(QTextEdit *textEdit);
+
 private:
       QFile file;//Чтобы знать какой файл мы редактируем, новый или уже открытый.
+        QString textFromFile;
 };
 
 #endif // FILEFUNCTION_H

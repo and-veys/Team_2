@@ -4,14 +4,34 @@
 #include <QString>
 #include <QFileDialog>
 #include <QFile>
+#include<QTextStream>
 
-fileFunction::fileFunction()
+
+FileFunction::FileFunction(QWidget *parent) : QWidget(parent)
 {
-
+    textFromFile = "";
 }
 
-/**/
-void fileFunction::slotSaveFile(QTextEdit* textEdit){
+
+/*
+Открытие файла
+Для передачи данных излучаем сигнал
+*/
+void FileFunction::slotOpenFile(){
+    QString fileName = QFileDialog::getOpenFileName(nullptr,("Открыть файл"), "/", ("Тип файла (*.txt)"));//Указали путь к файлу
+    if(fileName.isEmpty())return;//Если имя файла не указано
+    file.setFileName(fileName);
+    if(file.open(QIODevice::ReadWrite)){
+         textFromFile = QString(file.readAll());//прочитали данные из файла
+        emit signalFileDataReady(&textFromFile);
+    }
+}
+
+
+/*
+Сохранить файл под текущим именем
+*/
+void FileFunction::slotSaveFile(QString *data){
     if(file.fileName()==":/help/Help.txt")return;//Если открыт файл спарвки, то выходим
     if(file.isOpen()){//Если файт был открыт, сохраняем его. Если файл был создан, то запускаем функцию сохранить как.
         if(file.openMode() == QIODevice::ReadOnly){//Если файл был открыт только для чтения, то выходим, иначе сохраняем его.
@@ -19,90 +39,101 @@ void fileFunction::slotSaveFile(QTextEdit* textEdit){
             return;
         }
         else{
+            //Переоткрываем файл с параметрами QIODevice::WriteOnly | QIODevice::Truncate чтобы перезаписать содержимое файла
+            file.close();
+            file.open(QIODevice::WriteOnly | QIODevice::Truncate);
             qDebug()<<"Save";
-            QString text = textEdit->toPlainText();
-            QByteArray ba = text.toUtf8();
-            file.write(ba,ba.size());
-       }
+            QTextStream writeStream(&file);
+            writeStream << *data;
+         }
     }
     else{
-        if(textEdit->toPlainText() != "") slotSaveFileAs(textEdit);//
+        if(*data != "") slotSaveFileAs(data);//
    }
 }
 
-/**/
-void fileFunction::slotSaveFileAs(QTextEdit* textEdit){
+/*
+Сохранить файл под новым именем
+*/
+void FileFunction::slotSaveFileAs(QString *data){
     QString fileName = QFileDialog::getSaveFileName(nullptr,("Сохраниеть как.."), "/", ("Тип файла (*.txt)"));
     QFile file;
     file.setFileName(fileName);
     if(file.open(QIODevice::WriteOnly)){
-        QString text = textEdit->toPlainText();
-        QByteArray ba = text.toUtf8();
-        file.write(ba,ba.size());
+        QTextStream writeStream(&file);
+        writeStream << *data;
     }
 }
 
 
-/*
-Открытие файла
-*/
-void fileFunction::slotOpenFile(QTextEdit* textEdit){
-    QString fileName = QFileDialog::getOpenFileName(nullptr,("Открыть файл"), "/", ("Тип файла (*.txt)"));//Указали путь к файлу
-    if(fileName.isEmpty())return;//Если имя файла не указано
-    file.setFileName(fileName);
-    if(file.open(QIODevice::ReadWrite)){
-        QByteArray text = file.readAll();//прочитали данные из файла
-        textEdit->setReadOnly(false);
-        textEdit->setPlainText(text.data());//вывели в проле
-    }
-}
+/**/
 
 /*
 Закрытие файла
 */
-void fileFunction::slotCloseFile(QTextEdit* textEdit ){
-    slotSaveFile(textEdit);
+void FileFunction::slotCloseFile(QString *data){
+    slotSaveFile(data);
     file.close();
-    textEdit->clear();
-    textEdit->setEnabled(false);
+    emit signalFileCloseCompleet();
 
 }
 
-/*
- * Возможно ту функцию логично былобы реализовать в другом месте кода
- * руководствуясь тем, что при закрытии программы надо бы сохранить файл, пока оставлю сдесь как напоминашку
-Выход из программы
-*/
-//void fileFunction::slotExitProgramm(QTextEdit* textEdit){
-//    slotCloseFile(textEdit);
-//    QApplication::quit();
+
+///*
+// * Возможно ту функцию логично былобы реализовать в другом месте кода
+// * руководствуясь тем, что при закрытии программы надо бы сохранить файл, пока оставлю сдесь как напоминашку
+//Выход из программы
+//*/
+////void fileFunction::slotExitProgramm(QTextEdit* textEdit){
+////    slotCloseFile(textEdit);
+////    QApplication::quit();
+////}
+
+
+///*
+//Создать новый документ
+//файл при этом не создается
+//Файл создастся при сохранении документа
+//*/
+//void FileFunction::slotCreateNewDoc(QTextEdit* textEdit){
+//   textEdit->setEnabled(true);
+
 //}
 
 
-/*
-Создать новый документ
-файл при этом не создается
-Файл создастся при сохранении документа
-*/
-void fileFunction::slotCreateNewDoc(QTextEdit* textEdit){
-   textEdit->setEnabled(true);
-
-}
 
 
-
-/*
-Открыть только для чтения
-*/
-void fileFunction::slotOpenForReadOnly_clicked(QTextEdit* textEdit)
-{
-    QString fileName = QFileDialog::getOpenFileName(nullptr,("Открыть файл"), "/", ("Тип файла (*.txt)"));//Указали путь к файлу
-    if(fileName.isEmpty())return;//Если
+/**************************/
+/*Как читать и писать текст с форматированием
+ * пуская пока повисит...
+void MainWindow::slotSaveFileAs(){
+    QString fileName = QFileDialog::getSaveFileName(this,tr("Сохраниеть как.."), "/", tr("Тип файла (*.txt);;HTML files (*.html)"));
+    QFile file;
     file.setFileName(fileName);
-    if(file.open(QIODevice::ReadOnly)){
-        QByteArray text = file.readAll();//прочитали данные из файла
-        textEdit->setPlainText(text.data());//вывели в проле
-        textEdit->setReadOnly(true);
+    if(file.open(QIODevice::WriteOnly)){
+ //       QString text = ui->textEdit->toPlainText();
+        QString text = ui->textEdit->toHtml();
+        qDebug() << text;
+        //QByteArray ba = text.toUtf8();
+        //QByteArray ba = text;
+        //file.write(ba,ba.size());
+        QTextStream writeStream(&file);
+        writeStream << text;
+        file.close();
     }
 }
 
+void FileFunction::slotOpenFile(){
+    QString fileName = QFileDialog::getOpenFileName(this,tr("Открыть файл"), "/", tr("Тип файла (*.txt);;HTML files (*.html)"));//Указали путь к файлу
+    if(fileName.isEmpty())return;//Если
+    file.setFileName(fileName);
+    if(file.open(QIODevice::ReadWrite)){
+        QByteArray text = file.readAll();//прочитали данные из файла
+        ui->textEdit->setReadOnly(false);
+//        ui->textEdit->setPlainText(text.data());//вывели в проле
+qDebug() << text;
+        ui->textEdit->append(text);
+    }
+}
+
+*/
