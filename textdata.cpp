@@ -1,20 +1,27 @@
 #include "textdata.h"
 #include <QDebug>
 #include <QPlainTextEdit>
+#include <QThread>
 TextData::TextData() : QObject()
 {
     //параметры спрятанного текста
-    parametersHide = new ParameterHide("[...]", "<hide>", Qt::gray);
+    parametersHide = new ParameterHide("[...]", "<hide>", Qt::black);
 
     //параметры важности текста в порядке значимости
     auto addImportance = [this](QString tag, QString nm, QColor col){
         QString key  = "<" + tag.toUpper() + ">";
-        this->parametersImportance.insert(key, new ParameterImportance(nm, key, col));
+        parametersImportance.insert(key, new ParameterImportance(nm, key, col));
     };
-    addImportance("normal", "Обычный текст",  Qt::white);
-    addImportance("low_imp", "Не важный текст",  Qt::green);
-    addImportance("imp", "Важный текст",  Qt::blue);
+    addImportance("normal", "Обычный текст",  Qt::magenta);
+    addImportance("low_imp", "Не важный текст",  Qt::yellow);
+    addImportance("imp", "Важный текст",  Qt::green);
     addImportance("high_imp", "Очень важный текст",  Qt::red);
+
+    errorTexts.insert(NOT_SELECT, "Nothing is selected");
+    errorTexts.insert(HIDE_SELECT, "There is a hidden part in the selection text");
+    errorTexts.insert(SOME_SELECT, "Something is selected");
+    errorTexts.insert(NOT_HIDE, "This isn`t a hidden part");
+    errorTexts.insert(NOT_NORMAL, "There isn't a simple part");
 }
 
 
@@ -24,11 +31,17 @@ TextData::~TextData()
     foreach(auto dt, parametersImportance)
         delete dt;
 }
-int ParameterImportance::count = 0;
+
+void TextData::sendErrorSignal(errorEnum key)
+{
+    QString mess = (errorTexts.contains(key) ? errorTexts.value(key) : "Undefined error");
+    emit errorSetFormat(mess);
+}
+
 
 ParameterImportance *TextData::getParameterImportance(const QString &key)
 {
-    return (parametersImportance.contains(key) ? parametersImportance.value(key) : parametersImportance.value("normal"));
+    return (parametersImportance.contains(key) ? parametersImportance.value(key) : parametersImportance.value("<NORMAL>"));
 
 }
 
@@ -42,28 +55,112 @@ QList<ParameterImportance *> TextData::getSortListImportance()      //сорти
     return list;
 }
 
-void TextData::setImportance(QPlainTextEdit * wnd, QString & tag)       //TODO обработать сигнал ошибки вставки формата
+void TextData::setImportance(QPlainTextEdit * wnd, QString & tag)
 {
     QTextCursor cursor = wnd->textCursor();
-    if(!cursor.hasSelection()) return;
-    if(parametersHide->hasHideText(cursor)) {                           //TODO протестировать
-        emit errorSetFormat("There is a hidden part in the selection text");
+    if(!cursor.hasSelection()) {
+        sendErrorSignal(NOT_SELECT);
+        return;
+    }
+    if(parametersHide->hasCharsFormat(cursor)) {                           //TODO протестировать
+        sendErrorSignal(HIDE_SELECT);
         return;
     }
     QTextCharFormat ch = cursor.charFormat();
     getParameterImportance(tag)->setParameters(ch);
-
-
-
     cursor.setCharFormat(ch);
     cursor.setPosition(cursor.position());
     wnd->setTextCursor(cursor);
+}
+
+void TextData::showText(QPlainTextEdit *wnd)
+{
+    QTextCursor cursor = wnd->textCursor();
+    if(cursor.hasSelection()) {
+        sendErrorSignal(SOME_SELECT);
+        return;
+    }
+    if(!parametersHide->hasCharsFormat(cursor)) {
+        sendErrorSignal(NOT_HIDE);
+        return;
+    }
+    //TODO
+
+
+}
+
+void TextData::hideText(QPlainTextEdit *wnd)
+{
+    QTextCursor cursor = wnd->textCursor();
+    if(!cursor.hasSelection()) {
+        sendErrorSignal(NOT_SELECT);
+        return;
+    }
+    if(parametersHide->hasCharsFormat(cursor)) {
+        sendErrorSignal(HIDE_SELECT);
+        return;
+    }
+    if(!getNormalText()->allCharsFormat(cursor)) {
+        sendErrorSignal(NOT_NORMAL);
+        return;
+    }
+    QTextCharFormat ch = cursor.charFormat();
+    int pos = (cursor.selectionStart() == cursor.position() ? cursor.position() : -1);
+    hiddenString.insert(parametersHide->setParameters(ch), cursor.selectedText());
+    cursor.insertText(parametersHide->getReplacingText(), ch);
+    if(pos >= 0) cursor.setPosition(pos);
+    wnd->setTextCursor(cursor);
+}
+
+bool TextData::isForbiddenKey(QKeyEvent * event)
+{
+
+
+    QPlainTextEdit * wnd = qobject_cast<QPlainTextEdit *>(sender());
+    QTextCursor cursor = wnd->textCursor();
+    Qt::KeyboardModifiers mod = event->modifiers();
+    int key = event->key();
+
+    //qDebug() << key << event->text() << txt.length();
+    qDebug() << event->key() << event->text() << cursor.charFormat().property(1).toString();
+
+    if((mod == Qt::ControlModifier && key == 86) ||
+            (mod == Qt::ShiftModifier && key == Qt::Key_Insert) ||
+            (mod == Qt::ControlModifier && key == 90)) return true;     //запреты paste и ctrl-Z
+    if(key == 60 || key == 62) return true;                     //запрет на '<' и '>'
+    if(event->text().length() == 0) return false;
+    if(cursor.hasSelection()) {
+        if(parametersHide->hasCharsFormat(cursor)) return true;
+    }
+    else {
+        QTextCharFormat ch;
+        placeEnum pl = parametersHide->getPlaceCursor(cursor, ch);
+        if(pl == CENTER) return true;
+        if(key == Qt::Key_Delete) return (pl == START || pl == END_END || pl == START_START);
+        if(key == Qt::Key_Backspace) return (pl == END || pl == END_END || pl == START_START);
+        if(pl == NOT || pl == START) return false;
+
+
+        if(pl == END_END || pl == START_START || getNormalText()->getTag(ch) == "")
+            getNormalText()->setParameters(ch);
+        cursor.insertText(event->text(), ch);
+
+//        if(pl == END_END)
+//            cursor.movePosition(QTextCursor::End);
+//        wnd->setTextCursor(cursor);
+        return true;
+    }
+    return false;
+
+
+
 }
 
 //class ParametersTag -------------------------------------------------------------------------
 
 ParametersTag::ParametersTag(QString tag, QColor col): color(col), tag(tag)
 {
+
 
 }
 
@@ -81,7 +178,27 @@ void ParametersTag::setParameters(QTextCharFormat &ch)
     ch.setBackground(color);
     ch.setProperty(1, tag);
 }
+
+bool ParametersTag::isCharFormat(QTextCursor & cursor, bool all) {
+
+    int start = cursor.selectionStart()+1;
+    int end = cursor.selectionEnd();
+    cursor.setPosition(start);
+    while(start <= end) {
+        if((getTag(cursor.charFormat()) == getTag()) != all)
+            return !all;
+        cursor.movePosition(QTextCursor::NextCharacter);
+        ++start;
+    }
+    return all;
+}
+
+
+
+
 //class ParameterHide --------------------------------------------------------------------------
+int ParameterHide::id = 0;
+
 ParameterHide::ParameterHide(QString txt, QString tag, QColor col) : ParametersTag(tag, col)
 {
     replacingText = txt;
@@ -89,23 +206,36 @@ ParameterHide::ParameterHide(QString txt, QString tag, QColor col) : ParametersT
 
 ParameterHide::~ParameterHide()
 {
-    //qDebug() << replacingText;
 
 }
 
-bool ParameterHide::hasHideText(QTextCursor cursor)
+int ParameterHide::setParameters(QTextCharFormat &ch)
 {
-    int start = cursor.selectionStart();
-    int end = cursor.selectionEnd();
-    while(start <= end) {
-        if(getTag(cursor.charFormat()) == getTag())
-            return true;
-        cursor.movePosition(QTextCursor::NextCharacter);
-        ++start;
-    }
-    return false;
+    ParametersTag::setParameters(ch);
+    ch.setProperty(2, id);
+    return id++;
 }
+
+TextData::placeEnum ParameterHide::getPlaceCursor(QTextCursor cursor, QTextCharFormat &ch)
+{
+    ch = cursor.charFormat();
+    QString tag = getTag();
+    QString cur_tag = getTag(ch);
+    if(!cursor.movePosition(QTextCursor::NextCharacter)) return (cur_tag == tag ? TextData::placeEnum::END_END : TextData::placeEnum::NOT);
+
+
+    ch = cursor.charFormat();
+    QString new_tag = getTag(ch);
+    if(cur_tag != tag && new_tag == tag) return TextData::placeEnum::START;
+    if(cur_tag == tag && new_tag == tag) return (cursor.position() == 1 ? TextData::placeEnum::START_START : TextData::placeEnum::CENTER);
+    if(cur_tag != tag && new_tag != tag) return TextData::placeEnum::NOT;
+    return TextData::placeEnum::END;
+}
+
 //class ParameterImportance --------------------------------------------------------------------------
+
+int ParameterImportance::count = 0;
+
 ParameterImportance::ParameterImportance(QString name, QString tag, QColor col) : ParametersTag(tag, col)
 {
     nameImportance = name;
@@ -114,7 +244,7 @@ ParameterImportance::ParameterImportance(QString name, QString tag, QColor col) 
 
 ParameterImportance::~ParameterImportance()
 {
-    //qDebug() << nameImportance << id << " - " << count;
+
 }
 //---------------------------------------------------------------------------------------------------
 

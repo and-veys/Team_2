@@ -26,6 +26,8 @@ private:
 
 private slots:
     void setImportance(QString tag);
+    void hideText(bool hide);
+    void selectInformation(QString inf);
     //TODO ------------ Тесты функциональности, потом удалить
     void test() {qDebug() << "OK";};
     void test_2(bool a) {qDebug() << "OK:" << (a?"+":"-");};
