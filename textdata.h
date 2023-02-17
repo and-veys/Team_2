@@ -46,6 +46,7 @@ class TextData : public QObject
     Q_OBJECT
 public:
     TextData();
+    TextData(const TextData& dt){};
     ~TextData();
 private:
     QMap<QString, QString> hidden_string;               //массив для спрятанных строк

@@ -42,6 +42,7 @@ SearchWidgetImportance::SearchWidgetImportance(const QString &label, const TextD
 }
 
 
+
 /**
  * @brief SearchWidgetImportance::create_data_widget
  */
@@ -54,7 +55,7 @@ void SearchWidgetImportance::create_data_widget()
    auto importances = td.getSortListImportance();
    size_t i = 0;
    for(auto & im: importances) {
-       data_combobox->insertItem(i, im->nameImportance, im->getTag());
+       data_combobox->insertItem(i, im->getNameImportance(), im->getTag());
    }
 
    layout->addWidget(data_widget);
@@ -64,8 +65,12 @@ void SearchWidgetImportance::create_data_widget()
    buttons_layout->addWidget(prev);
    buttons_layout->addWidget(next);
 
-   connect(data_combobox, &QComboBox::currentIndexChanged, this, [this, data_combobox](){ searcheble_text = data_combobox->currentData().toString();});
-
+   connect(data_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(AMV_FUNC_1(int)));
+}
+void SearchWidgetImportance::AMV_FUNC_1(int ind) //только переименуй потом ))
+{
+    auto data_combobox = dynamic_cast<QComboBox*>(data_widget);
+    searcheble_text = data_combobox->currentData().toString();
 }
 
 
