@@ -27,12 +27,11 @@ public:
         NOT_NORMAL
     };
     enum placeEnum {
-        NOT = 0,
-        START,
-        CENTER,
-        END,
-        END_END,
-        START_START
+        NOT = 1,
+        START = 2,
+        CENTER = 4,
+        END = 8,
+        NORMAL = 128
     };
 private:
     QMap<int, QString> hiddenString;               //массив для спрятанных строк
@@ -89,7 +88,7 @@ public:
     ~ParameterHide();
     QString getReplacingText(){return replacingText;};
     int setParameters(QTextCharFormat & ch);
-    TextData::placeEnum getPlaceCursor(QTextCursor cursor, QTextCharFormat & ch);
+    int getPlaceCursor(QTextCursor cursor, QTextCharFormat & ch);
 private:
     QString replacingText;
     static int id;        //для уникального идентификатора спрятанного текста

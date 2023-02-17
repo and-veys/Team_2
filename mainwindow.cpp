@@ -30,13 +30,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(menu, SIGNAL(hideText(bool)), this, SLOT(hideText(bool)));                  //установка спратать/показать
     connect(menu, SIGNAL(helpShow(QString)), this, SLOT(test_3(QString)));
     connect(&textData, SIGNAL(errorSetFormat(QString)), this, SLOT(selectInformation(QString))); //информация о неуспешном выделении текста
+    connect(mainEdit, SIGNAL(isForbiddenKey(QKeyEvent *)), &textData, SLOT(isForbiddenKey(QKeyEvent *))); //запрет клавиш и мест
 //---------------------------------------------------
-    connect(mainEdit, SIGNAL(isForbiddenKey(QKeyEvent *)), &textData, SLOT(isForbiddenKey(QKeyEvent *)));
 // TODO удалить, это для теста---------------------------------------------------
     QString test_S = "Раз-Два-Три\nOne-Two-Three\nEin-Zwei-Drei";
    mainEdit->setPlainText(test_S);
 //---------------------------------------------------
- //  mainEdit->setForbiddenKeys();        //установить запрещающие сиволы
 }
 
 MainWindow::~MainWindow()
@@ -62,6 +61,17 @@ void MainWindow::selectInformation(QString inf)
 {
     //Можно добавить в строку состояния или еще куда-нибудь
    QMessageBox::information(this, "You can`t do that", inf);
+}
+
+//TODO test, надо удалить
+void MainWindow::test_3(QString a) {
+    QTextCursor ch = mainEdit->textCursor();
+    QString aa =ch.charFormat().property(1).toString();
+
+    qDebug() << "TAG:" << aa << "BL:" <<ch.blockNumber();
+    qDebug() << "BLP:" << ch.positionInBlock() << ":" << "POS:" << ch.position();
+
+
 }
 
 

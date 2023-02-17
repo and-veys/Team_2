@@ -121,39 +121,26 @@ bool TextData::isForbiddenKey(QKeyEvent * event)
     Qt::KeyboardModifiers mod = event->modifiers();
     int key = event->key();
 
-    //qDebug() << key << event->text() << txt.length();
-    qDebug() << event->key() << event->text() << cursor.charFormat().property(1).toString();
+    if((mod == Qt::ControlModifier && key == 86) || (mod == Qt::ShiftModifier && key == Qt::Key_Insert)) return true;
+    if(key == 60 || key == 62) return true;                             //запрет на '<' и '>'
+    if(event->text().length() == 0) return false;                       //всякая навигация
 
-    if((mod == Qt::ControlModifier && key == 86) ||
-            (mod == Qt::ShiftModifier && key == Qt::Key_Insert) ||
-            (mod == Qt::ControlModifier && key == 90)) return true;     //запреты paste и ctrl-Z
-    if(key == 60 || key == 62) return true;                     //запрет на '<' и '>'
-    if(event->text().length() == 0) return false;
     if(cursor.hasSelection()) {
-        if(parametersHide->hasCharsFormat(cursor)) return true;
+        sendErrorSignal(HIDE_SELECT);
+        return parametersHide->hasCharsFormat(cursor);
     }
-    else {
-        QTextCharFormat ch;
-        placeEnum pl = parametersHide->getPlaceCursor(cursor, ch);
-        if(pl == CENTER) return true;
-        if(key == Qt::Key_Delete) return (pl == START || pl == END_END || pl == START_START);
-        if(key == Qt::Key_Backspace) return (pl == END || pl == END_END || pl == START_START);
-        if(pl == NOT || pl == START) return false;
+    QTextCharFormat ch;
+    int flag = parametersHide->getPlaceCursor(cursor, ch);
+    if(flag == NOT || flag == START) return false;
+    if(flag == CENTER) return true;
+    if(key == Qt::Key_Delete) return (flag & START);
+    if(key == Qt::Key_Backspace) return (flag & END);
 
+    if(flag & NORMAL || getNormalText()->getTag(ch) == "")
+        getNormalText()->setParameters(ch);
 
-        if(pl == END_END || pl == START_START || getNormalText()->getTag(ch) == "")
-            getNormalText()->setParameters(ch);
-        cursor.insertText(event->text(), ch);
-
-//        if(pl == END_END)
-//            cursor.movePosition(QTextCursor::End);
-//        wnd->setTextCursor(cursor);
-        return true;
-    }
-    return false;
-
-
-
+    cursor.insertText(event->text(), ch);
+    return true;
 }
 
 //class ParametersTag -------------------------------------------------------------------------
@@ -216,20 +203,23 @@ int ParameterHide::setParameters(QTextCharFormat &ch)
     return id++;
 }
 
-TextData::placeEnum ParameterHide::getPlaceCursor(QTextCursor cursor, QTextCharFormat &ch)
+int ParameterHide::getPlaceCursor(QTextCursor cursor, QTextCharFormat &ch)
 {
     ch = cursor.charFormat();
     QString tag = getTag();
     QString cur_tag = getTag(ch);
-    if(!cursor.movePosition(QTextCursor::NextCharacter)) return (cur_tag == tag ? TextData::placeEnum::END_END : TextData::placeEnum::NOT);
 
+    if(cursor.positionInBlock() == 0)
+        return (tag == cur_tag ? TextData::placeEnum::START | TextData::placeEnum::NORMAL : TextData::placeEnum::NORMAL);
+    if(!cursor.movePosition(QTextCursor::NextCharacter))
+        return (cur_tag == tag ? TextData::placeEnum::END | TextData::placeEnum::NORMAL : TextData::placeEnum::NOT);
 
     ch = cursor.charFormat();
     QString new_tag = getTag(ch);
     if(cur_tag != tag && new_tag == tag) return TextData::placeEnum::START;
-    if(cur_tag == tag && new_tag == tag) return (cursor.position() == 1 ? TextData::placeEnum::START_START : TextData::placeEnum::CENTER);
-    if(cur_tag != tag && new_tag != tag) return TextData::placeEnum::NOT;
-    return TextData::placeEnum::END;
+    if(cur_tag == tag && new_tag == tag) return TextData::placeEnum::CENTER;
+    if(cur_tag == tag && new_tag != tag) return TextData::placeEnum::END;
+    return TextData::placeEnum::NOT;
 }
 
 //class ParameterImportance --------------------------------------------------------------------------
