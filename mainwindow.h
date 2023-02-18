@@ -54,6 +54,10 @@ public slots:
     void slotSaveDocument(bool action);
     void slotCreateDocument();
     void slotCloceDocument();
+    /**/
+    void slotPrintDebug();
+    /**/
+
 signals:
     void signalSaveDocument(QString *text);
     void signalSaveDocumentAs(QString *text);

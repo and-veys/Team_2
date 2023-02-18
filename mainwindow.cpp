@@ -42,6 +42,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     /*Вихров*/    connect(this, SIGNAL(signalSaveDocumentAs(QString*)),fileFunction, SLOT(slotSaveFileAs(QString *)));
     /*Вихров*/    connect(menu, SIGNAL(closeDocument()), this, SLOT(slotCloceDocument()));
     /*Вихров*/    connect(this, SIGNAL(signalCloseDocument(QString *)),fileFunction, SLOT(slotCloseFile(QString *)) );
+connect(menu, SIGNAL(signalTest()),this, SLOT(slotPrintDebug()) );
+
 
     connect(menu, SIGNAL(setImportance(QString)), this, SLOT(setImportance(QString)));  //установка важности
 
@@ -131,3 +133,41 @@ void MainWindow::slotCloceDocument(){
     mainEdit->setEnabled(false);
 }
 
+
+/**/
+void MainWindow::slotPrintDebug(){
+qDebug() << "DEBUG";
+QString str = mainEdit->toolTip();
+qDebug() << str;
+QTextCursor cursor;//Создаем экземпляр курсора
+cursor = mainEdit->textCursor();//говорим, что этот экземпляр отосится к нашему текстовому окну
+/********Хочу получить тэг скрытого текста**********/
+int start = cursor.selectionStart();
+int end = cursor.selectionEnd();
+qDebug() << QString(tr("Start %1, End %2").arg(start).arg(cursor.selectionEnd()));
+while(start <= end) {
+    ParameterHide *parametr = textData.getParameterHide();
+    qDebug() << parametr->getTag(cursor.charFormat()) << "marker* ";
+//    qDebug() << parametr->getTag() << "marker - ";
+    cursor.movePosition(QTextCursor::NextCharacter);
+    ++start;
+}
+
+
+/*************************/
+//    ParameterImportance *impotents;
+//    QTextCharFormat ch = cursor.charFormat();
+//    QString key;
+//    textData.getParameterImportance( key);
+
+
+
+//      cursor.charFormat();
+// blockFormat
+//QPlainTextEdit::textCursor() const;
+
+//    QTextCharFormat textCharFormat = mainEdit->currentCharFormat();
+//    textCharFormat.setForeground(Qt::darkGreen);
+//    mainEdit->setCurrentCharFormat(textCharFormat);
+//    mainEdit->setCurrentCharFormat(textCharFormat);
+}

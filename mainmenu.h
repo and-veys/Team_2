@@ -21,6 +21,9 @@ signals:
     void setImportance(QString);
     void hideText(bool);
     void helpShow(QString);
+
+    /******************/
+    void signalTest();
 };
 
 #endif // MAINMENU_H

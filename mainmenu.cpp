@@ -39,4 +39,10 @@ MainMenu::MainMenu(QWidget * par, TextData * dt):QMenuBar(par)
     menu->addAction(getIcon(QStyle::SP_MessageBoxQuestion), "Помощь", [this]{emit helpShow("help");});
     menu->addAction(getIcon(QStyle::SP_MessageBoxInformation), "О нас", [this]{emit helpShow("about");});
     addMenu(menu);
+
+    /***************************************/
+       menu = new QMenu("Тест");
+       menu->addAction(getIcon(QStyle::SP_MessageBoxQuestion), "Тест", [this]{emit signalTest();});
+       addMenu(menu);
+
 }
