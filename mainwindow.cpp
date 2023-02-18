@@ -4,6 +4,8 @@
 #include "edit_window.h"
 #include "mainmenu.h"
 
+#include <QMessageBox>
+
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -36,17 +38,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     connect(menu, SIGNAL(setImportance(QString)), this, SLOT(setImportance(QString)));  //установка важности
 
+    connect(menu, SIGNAL(hideText(bool)), this, SLOT(hideText(bool)));                  //установка спратать/показать
+
+
     connect(menu, SIGNAL(searchString()), this, SLOT(search_string_slot()));
     connect(menu, SIGNAL(searchImportance()), this, SLOT(search_importance_slot()));
 
-    connect(menu, SIGNAL(hideText(bool)), this, SLOT(test_2(bool)));
     connect(menu, SIGNAL(helpShow(QString)), this, SLOT(test_3(QString)));
-//---------------------------------------------------
-
-
-// TODO удалить, это для теста---------------------------------------------------
-    QString test_S = "Раз-Два-Три\nOne-Two-Three\nEin-Zwei-Drei";
-    mainEdit->setPlainText(test_S);
+    connect(&textData, SIGNAL(errorSetFormat(QString)), this, SLOT(selectInformation(QString))); //информация о неуспешном выделении текста
+    connect(mainEdit, SIGNAL(isForbiddenKey(QKeyEvent *)), &textData, SLOT(isForbiddenKey(QKeyEvent *))); //запрет клавиш и мест
 //---------------------------------------------------
 }
 
@@ -68,6 +68,23 @@ void MainWindow::setImportance(QString tag)
 {
     textData.setImportance(mainEdit, tag);
 }
+
+void MainWindow::hideText(bool hide)
+{
+    if(hide)
+        textData.hideText(mainEdit);
+    else
+        textData.showText(mainEdit);
+
+}
+
+void MainWindow::selectInformation(QString inf)
+{
+    //Можно добавить в строку состояния или еще куда-нибудь
+   QMessageBox::information(this, "You can`t do that", inf);
+}
+
+
 
 
 
