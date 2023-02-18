@@ -48,7 +48,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(menu, SIGNAL(helpShow(QString)), this, SLOT(test_3(QString)));
     connect(menu, SIGNAL(aboutUsShow(QString)), this, SLOT(test_3(QString)));
 //---------------------------------------------------
-
+//    connect(mainEdit, SIGNAL(cursorPositionChanged()), stBar, SLOT(checkChangeCursorPosition()));
+    connect(mainEdit, SIGNAL(cursorPositionChanged()), stBar, SLOT(checkChangeCursorPosition()));
+    connect(this, SIGNAL(keyPressEvent(QKeyEvent *)), stBar, SLOT(checkKeyEvent(QKeyEvent *)));
 
 // TODO удалить, это для теста---------------------------------------------------
     QString test_S = "Раз-Два-Три\nOne-Two-Three\nEin-Zwei-Drei";

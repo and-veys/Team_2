@@ -21,7 +21,9 @@ public:
 
 private slots:
     void testSlotStatusBar(bool item);
-//    void checkKeyEvent(QKeyEvent *event);
+    void checkKeyEvent(QKeyEvent *event);
+    void checkChangeCursorPosition();
+    void showCursorPosition(int pos);
 };
 
 

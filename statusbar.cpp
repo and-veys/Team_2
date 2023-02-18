@@ -1,5 +1,8 @@
 #include "statusbar.h"
+#include <QKeyEvent>
 #include "windows.h"
+#include "mainwindow.h"
+
 
 Team2StatusBar::Team2StatusBar(QWidget * par):QStatusBar(par)
 {
@@ -28,6 +31,37 @@ void Team2StatusBar::changeLabel(QLabel *lbl, QString str)
 {
     lbl->setText(str);
 }
+
+void Team2StatusBar::checkKeyEvent(QKeyEvent *event)
+{
+    if (event->key() == VK_CAPITAL)
+    {
+        if (GetKeyState(VK_CAPITAL) == 1)
+        {
+            changeLabel(labelCapsLock, "CAPS");
+        }else{
+            changeLabel(labelCapsLock, "         ");
+        }
+    }
+}
+
+void Team2StatusBar::checkChangeCursorPosition()
+{
+    changeLabel(labelMessage, "Cursor was change position");
+
+}
+
+void Team2StatusBar::showCursorPosition(int pos)
+{
+    changeLabel(labelColNum, QString::number(pos));
+}
+/*
+
+void MainWindow::checkChangeCursorPosition()
+{
+     Team2StatusBar::showCursorPosition(mainEdit->textCursor().position());
+}
+*/
 
 // only for testing, must be delete
 void Team2StatusBar::testSlotStatusBar(bool item)
