@@ -7,13 +7,15 @@
 #include <QWidget>
 #include <QTextEdit>
 
-class FileFunction : public QWidget
+class FileFunction : public QObject
 {
     Q_OBJECT
 public:
-    explicit FileFunction(QWidget *parent = nullptr);
+    explicit FileFunction(QObject *parent = nullptr);
 
-
+    ~FileFunction(){
+        delete this;
+    }
 signals:
     void signalFileDataReady(QString *text);//Излучаем когда прочитали данные из файла
     void signalFileCloseCompleet();//Излучаем когда закрыли файл(ну вдруг пригодится..., например чтобы текстовые поля почистить)

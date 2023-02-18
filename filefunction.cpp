@@ -7,7 +7,7 @@
 #include<QTextStream>
 
 
-FileFunction::FileFunction(QWidget *parent) : QWidget(parent)
+FileFunction::FileFunction(QObject *parent) : QObject(parent)
 {
     textFromFile = "";
 }

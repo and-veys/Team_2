@@ -68,7 +68,7 @@ void MainWindow::search_importance_slot() {
 
 MainWindow::~MainWindow()
 {
-
+    fileFunction->~FileFunction();
 }
 
 void MainWindow::setImportance(QString tag)
