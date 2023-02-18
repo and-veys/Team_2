@@ -20,6 +20,7 @@ SOURCES += \
     main.cpp \
     mainmenu.cpp \
     mainwindow.cpp \
+    search_widgets.cpp \
     textdata.cpp \
     filefunction.cpp
 
@@ -27,6 +28,7 @@ HEADERS += \
     edit_window.h \
     mainmenu.h \
     mainwindow.h \
+    search_widgets.h \
     textdata.h \
     filefunction.h
 
