@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     setMenuBar(menu);
 
     fileFunction = new FileFunction(this);
-    mainEdit->setDisabled(true);//Гасим поле документа
+    //mainEdit->setDisabled(true);//Гасим поле документа
 
     searchWidgetString.reset( new SearchWidgetString(QString("Поиск")));
     searchWidgetString->hide();

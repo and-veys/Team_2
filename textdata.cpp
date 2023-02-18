@@ -84,10 +84,18 @@ void TextData::showText(QPlainTextEdit *wnd)
         sendErrorSignal(NOT_HIDE);
         return;
     }
-    wnd->setTextCursor(cursor);
+    QString ins = hiddenString.take(parametersHide->getHideKey(cursor));
+    int start = cursor.selectionStart();
+    if(cursor.selectedText() != parametersHide->getReplacingText()) {
+        ins = cursor.selectedText()[0] + ins;
+        ++start;
+    }
     QTextCharFormat ch = cursor.charFormat();
     getNormalText()->setParameters(ch);
-    cursor.insertText(hiddenString.take(parametersHide->getHideKey(cursor)), ch);
+    cursor.insertText(ins, ch);
+    cursor.setPosition(start, QTextCursor::KeepAnchor);
+    wnd->setTextCursor(cursor);
+
 }
 
 void TextData::hideText(QPlainTextEdit *wnd)
@@ -119,14 +127,17 @@ bool TextData::isForbiddenKey(QKeyEvent * event)
     QTextCursor cursor = wnd->textCursor();
     Qt::KeyboardModifiers mod = event->modifiers();
     int key = event->key();
-
     if((mod == Qt::ControlModifier && key == 86) || (mod == Qt::ShiftModifier && key == Qt::Key_Insert)) return true; //запрет paste
+    if((mod == Qt::ControlModifier && key == 90)) return true; //запрет ctrl+Z
     if(key == 60 || key == 62) return true;                             //запрет на '<' и '>'
     if(event->text().length() == 0) return false;                       //всякая навигация
 
     if(cursor.hasSelection()) {
-        sendErrorSignal(HIDE_SELECT);
-        return parametersHide->hasCharsFormat(cursor);
+        if(parametersHide->hasCharsFormat(cursor)) {
+            sendErrorSignal(HIDE_SELECT);
+            return true;
+        }
+        return false;
     }
     QTextCharFormat ch;
     int flag = parametersHide->getPlaceCursor(cursor, ch);

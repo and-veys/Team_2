@@ -41,7 +41,7 @@ private slots:
     //TODO ------------ Тесты функциональности, потом удалить
     void test() {qDebug() << "OK";};
     void test_2(bool a) {qDebug() << "OK:" << (a?"+":"-");};
-    void test_3(QString a){qDebug() << "TAG:" << a;};
+    void test_3(QString a){qDebug() << a;};
     //---------------------------------------------------
 
     void search_string_slot();
