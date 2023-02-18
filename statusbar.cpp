@@ -15,17 +15,13 @@ Team2StatusBar::Team2StatusBar(QWidget * par):QStatusBar(par)
     labelNumLock->setFrameStyle(QFrame::Panel | QFrame::Sunken);
     labelMessage = new QLabel("Ready...");//сообщения, подсказки и т.п.
     labelMessage->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+    this->addWidget(labelMessage,1);
+    this->addWidget(labelColNum);
+    this->addWidget(labelRowNum);
+    this->addPermanentWidget(labelCapsLock);
+    this->addPermanentWidget(labelInsert);
+    this->addPermanentWidget(labelNumLock);
 
-}
-
-void Team2StatusBar::addLabels(QStatusBar * bar)
-{
-    bar->addWidget(labelMessage,1);
-    bar->addWidget(labelColNum);
-    bar->addWidget(labelRowNum);
-    bar->addPermanentWidget(labelCapsLock);
-    bar->addPermanentWidget(labelInsert);
-    bar->addPermanentWidget(labelNumLock);
 }
 
 void Team2StatusBar::changeLabel(QLabel *lbl, QString str)

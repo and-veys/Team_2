@@ -17,7 +17,6 @@ private:
 
 public:
     Team2StatusBar(QWidget * par);
-    void addLabels(QStatusBar * bar);
     void changeLabel(QLabel *lbl, QString str);
 
 private slots:

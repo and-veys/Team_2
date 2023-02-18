@@ -21,7 +21,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     Team2StatusBar * stBar = new Team2StatusBar(this);
     setStatusBar(stBar);
-    stBar->addLabels(stBar);
 
     searchWidgetString.reset( new SearchWidgetString(QString("Поиск")));
     searchWidgetString->hide();
