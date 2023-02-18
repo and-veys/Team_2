@@ -94,7 +94,7 @@ void MainWindow::selectInformation(QString inf)
 
 
 
-<<<<<<< HEAD
+
 /*
 Слот для вывода прочитанного из файла текста
 Для работы создать:
@@ -130,8 +130,4 @@ void MainWindow::slotCloceDocument(){
     mainEdit->clear();
     mainEdit->setEnabled(false);
 }
-=======
 
-
-
->>>>>>> 59ffc6989ef64f99c5fcae3f6f3699c7096edbff
