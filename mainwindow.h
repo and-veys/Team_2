@@ -5,9 +5,13 @@
 #include "textdata.h"
 #include <QDebug>
 
+#include "search_widgets.h"
+#include <memory>
+
 class QPlainTextEdit;
 class QPushButton;
 class EditWindow;
+
 
 
 
@@ -23,12 +27,20 @@ public:
 private:
     EditWindow* mainEdit;
     TextData textData;
+    std::unique_ptr<SearchWidgetString> searchWidgetString;
+    std::unique_ptr<SearchWidgetImportance> searchWidgetImportance;
 
 private slots:
+    void setImportance(QString tag);
     //TODO ------------ Тесты функциональности, потом удалить
     void test() {qDebug() << "OK";};
     void test_2(bool a) {qDebug() << "OK:" << (a?"+":"-");};
     void test_3(QString a) {qDebug() << "TAG:" << a;};
     //---------------------------------------------------
+
+    void search_string_slot();
+    void search_importance_slot();
+
+
 };
 #endif // MAINWINDOW_H

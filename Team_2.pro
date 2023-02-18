@@ -21,6 +21,7 @@ SOURCES += \
     mainmenu.cpp \
     mainwindow.cpp \
     statusbar.cpp \
+    search_widgets.cpp \
     textdata.cpp \
     filefunction.cpp
 
@@ -29,6 +30,7 @@ HEADERS += \
     mainmenu.h \
     mainwindow.h \
     statusbar.h \
+    search_widgets.h \
     textdata.h \
     filefunction.h
 
