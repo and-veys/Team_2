@@ -35,13 +35,15 @@ public:
         NORMAL = 128
     };
 private:
-    QMap<int, QString> hiddenString;               //массив для спрятанных строк
+//    QMap<int, QString> hiddenString;               //массив для спрятанных строк
     QMap<QString, ParameterImportance *> parametersImportance;
     QMap<errorEnum, QString> errorTexts;
-    ParameterHide * parametersHide;
+//    ParameterHide * parametersHide;
     void sendErrorSignal(errorEnum key);
     ParameterImportance * getNormalText(){return getParameterImportance("!");};
 public:
+     ParameterHide * parametersHide;
+        QMap<int, QString> hiddenString;               //массив для спрятанных строк
     ParameterImportance * getParameterImportance(const QString &key);
     ParameterHide * getParameterHide(){return parametersHide;};
     QList<ParameterImportance *> getSortListImportance();

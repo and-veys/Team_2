@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "filefunction.h"
+#include "convertdata.h"
 
 class QPlainTextEdit;
 class QPushButton;
@@ -33,6 +34,7 @@ private:
     std::unique_ptr<SearchWidgetImportance> searchWidgetImportance;
 
     FileFunction *fileFunction;//Вихров
+    ConvertData *convertData;
 
 private slots:
     void setImportance(QString tag);

@@ -3,6 +3,7 @@
 
 #include "edit_window.h"
 #include "mainmenu.h"
+#include "convertdata.h"
 
 #include <QMessageBox>
 
@@ -20,8 +21,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     MainMenu * menu = new MainMenu(this, &textData);
     setMenuBar(menu);
 
+    convertData = new ConvertData(this);
     fileFunction = new FileFunction(this);
-    mainEdit->setDisabled(true);//Гасим поле документа
+   // mainEdit->setDisabled(true);//Гасим поле документа
 
     searchWidgetString.reset( new SearchWidgetString(QString("Поиск")));
     searchWidgetString->hide();
@@ -104,11 +106,17 @@ connect(fileFunction, SIGNAL(signalFileDataReady(QString*)), this, SLOT(slotRcvF
 */
 void MainWindow::slotRcvFileData(QString *text){
     mainEdit->appendPlainText(*text);
+   // loadData(QString *gettingString, QPlainTextEdit *edtWin, TextData *textData)
+    convertData->loadData(text, mainEdit, &textData);
 }
 
 /**/
 void MainWindow::slotSaveDocument(bool action){
-    QString str = mainEdit->toPlainText();
+//    QString str = mainEdit->toPlainText();
+    QString str;
+           convertData->converterData(mainEdit,&textData, &str);
+
+//    qDebug() << "Try to save" << str;
     if(action)
         emit signalSaveDocumentAs(&str);
     else
@@ -134,40 +142,10 @@ void MainWindow::slotCloceDocument(){
 }
 
 
+
 /**/
 void MainWindow::slotPrintDebug(){
-qDebug() << "DEBUG";
-QString str = mainEdit->toolTip();
-qDebug() << str;
-QTextCursor cursor;//Создаем экземпляр курсора
-cursor = mainEdit->textCursor();//говорим, что этот экземпляр отосится к нашему текстовому окну
-/********Хочу получить тэг скрытого текста**********/
-int start = cursor.selectionStart();
-int end = cursor.selectionEnd();
-qDebug() << QString(tr("Start %1, End %2").arg(start).arg(cursor.selectionEnd()));
-while(start <= end) {
-    ParameterHide *parametr = textData.getParameterHide();
-    qDebug() << parametr->getTag(cursor.charFormat()) << "marker* ";
-//    qDebug() << parametr->getTag() << "marker - ";
-    cursor.movePosition(QTextCursor::NextCharacter);
-    ++start;
+
+    //convertData->converterData(mainEdit, &textData);
 }
 
-
-/*************************/
-//    ParameterImportance *impotents;
-//    QTextCharFormat ch = cursor.charFormat();
-//    QString key;
-//    textData.getParameterImportance( key);
-
-
-
-//      cursor.charFormat();
-// blockFormat
-//QPlainTextEdit::textCursor() const;
-
-//    QTextCharFormat textCharFormat = mainEdit->currentCharFormat();
-//    textCharFormat.setForeground(Qt::darkGreen);
-//    mainEdit->setCurrentCharFormat(textCharFormat);
-//    mainEdit->setCurrentCharFormat(textCharFormat);
-}

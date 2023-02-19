@@ -88,6 +88,7 @@ void TextData::showText(QPlainTextEdit *wnd)
     QTextCharFormat ch = cursor.charFormat();
     getNormalText()->setParameters(ch);
     cursor.insertText(hiddenString.take(parametersHide->getHideKey(cursor)), ch);
+
 }
 
 void TextData::hideText(QPlainTextEdit *wnd)
