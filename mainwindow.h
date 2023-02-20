@@ -10,6 +10,8 @@
 
 #include "filefunction.h"
 
+#include "aboutus.h"
+
 class QPlainTextEdit;
 class QPushButton;
 class EditWindow;
@@ -33,6 +35,8 @@ private:
     std::unique_ptr<SearchWidgetImportance> searchWidgetImportance;
 
     FileFunction *fileFunction;//Вихров
+
+    aboutus *signalAboutUs;
 
 private slots:
     void setImportance(QString tag);
