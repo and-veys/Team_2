@@ -5,11 +5,11 @@
 TextData::TextData() : QObject()
 {
     //параметры спрятанного текста
-    parametersHide = new ParameterHide("[...]", "<hide>", Qt::black);
+    parametersHide = new ParameterHide("[...]", ParametersTag::createTag("hide"), Qt::black);
 
     //параметры важности текста в порядке значимости
     auto addImportance = [this](QString tag, QString nm, QColor col){
-        QString key  = "<" + tag.toUpper() + ">";
+        QString key  = ParametersTag::createTag(tag);
         parametersImportance.insert(key, new ParameterImportance(nm, key, col));
     };
     addImportance("normal", "Обычный текст",  Qt::white);
@@ -41,7 +41,9 @@ void TextData::sendErrorSignal(errorEnum key)
 
 ParameterImportance *TextData::getParameterImportance(const QString &key)
 {
-    return (parametersImportance.contains(key) ? parametersImportance.value(key) : parametersImportance.value("<NORMAL>"));
+    return (parametersImportance.contains(key) ?
+                parametersImportance.value(key) :
+                parametersImportance.value(ParametersTag::createTag("normal")));
 
 }
 
@@ -84,10 +86,21 @@ void TextData::showText(QPlainTextEdit *wnd)
         sendErrorSignal(NOT_HIDE);
         return;
     }
-    wnd->setTextCursor(cursor);
+    QString ins = hiddenString.take(parametersHide->getHideKey(cursor));
+    int start = cursor.selectionStart();
+    if(cursor.selectedText() != parametersHide->getReplacingText()) {
+        ins = cursor.selectedText()[0] + ins;
+        ++start;
+    }
     QTextCharFormat ch = cursor.charFormat();
     getNormalText()->setParameters(ch);
+
     cursor.insertText(hiddenString.take(parametersHide->getHideKey(cursor)), ch);
+
+    cursor.insertText(ins, ch);
+    cursor.setPosition(start, QTextCursor::KeepAnchor);
+    wnd->setTextCursor(cursor);
+
 
 }
 
@@ -120,14 +133,16 @@ bool TextData::isForbiddenKey(QKeyEvent * event)
     QTextCursor cursor = wnd->textCursor();
     Qt::KeyboardModifiers mod = event->modifiers();
     int key = event->key();
-
     if((mod == Qt::ControlModifier && key == 86) || (mod == Qt::ShiftModifier && key == Qt::Key_Insert)) return true; //запрет paste
-    if(key == 60 || key == 62) return true;                             //запрет на '<' и '>'
+    if((mod == Qt::ControlModifier && key == 90)) return true; //запрет ctrl+Z
     if(event->text().length() == 0) return false;                       //всякая навигация
 
     if(cursor.hasSelection()) {
-        sendErrorSignal(HIDE_SELECT);
-        return parametersHide->hasCharsFormat(cursor);
+        if(parametersHide->hasCharsFormat(cursor)) {
+            sendErrorSignal(HIDE_SELECT);
+            return true;
+        }
+        return false;
     }
     QTextCharFormat ch;
     int flag = parametersHide->getPlaceCursor(cursor, ch);

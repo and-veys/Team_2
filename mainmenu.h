@@ -20,10 +20,15 @@ signals:
     void searchImportance();
     void setImportance(QString);
     void hideText(bool);
+    void unhideText(bool);
     void helpShow(QString);
+
 
     /******************/
     void signalTest();
+
+    void aboutUsShow(QString);
+
 };
 
 #endif // MAINMENU_H
