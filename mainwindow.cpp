@@ -3,6 +3,7 @@
 
 #include "edit_window.h"
 #include "mainmenu.h"
+#include "statusbar.h" // WND9-11
 
 #include <QMessageBox>
 
@@ -19,6 +20,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 //-----------------------------------------------------------
     MainMenu * menu = new MainMenu(this, &textData);
     setMenuBar(menu);
+
+    Team2StatusBar * stBar = new Team2StatusBar(this);
+    setStatusBar(stBar);
 
     fileFunction = new FileFunction(this);
     //mainEdit->setDisabled(true);//Гасим поле документа
@@ -50,6 +54,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     connect(menu, SIGNAL(searchString()), this, SLOT(search_string_slot()));
     connect(menu, SIGNAL(searchImportance()), this, SLOT(search_importance_slot()));
+
+//---------------------------------------------------
+//    connect(mainEdit, SIGNAL(cursorPositionChanged()), stBar, SLOT(checkChangeCursorPosition()));
+    connect(mainEdit, SIGNAL(cursorPositionChanged()), stBar, SLOT(checkChangeCursorPosition()));
+    connect(this, SIGNAL(keyPressEvent(QKeyEvent *)), stBar, SLOT(checkKeyEvent(QKeyEvent *)));
 
     connect(menu, SIGNAL(helpShow(QString)), this, SLOT(test_3(QString)));
     connect(&textData, SIGNAL(errorSetFormat(QString)), this, SLOT(selectInformation(QString))); //информация о неуспешном выделении текста
