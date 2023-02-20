@@ -5,11 +5,11 @@
 TextData::TextData() : QObject()
 {
     //параметры спрятанного текста
-    parametersHide = new ParameterHide("[...]", "<hide>", Qt::black);
+    parametersHide = new ParameterHide("[...]", ParametersTag::createTag("hide"), Qt::black);
 
     //параметры важности текста в порядке значимости
     auto addImportance = [this](QString tag, QString nm, QColor col){
-        QString key  = "<" + tag.toUpper() + ">";
+        QString key  = ParametersTag::createTag(tag);
         parametersImportance.insert(key, new ParameterImportance(nm, key, col));
     };
     addImportance("normal", "Обычный текст",  Qt::white);
@@ -41,7 +41,9 @@ void TextData::sendErrorSignal(errorEnum key)
 
 ParameterImportance *TextData::getParameterImportance(const QString &key)
 {
-    return (parametersImportance.contains(key) ? parametersImportance.value(key) : parametersImportance.value("<NORMAL>"));
+    return (parametersImportance.contains(key) ?
+                parametersImportance.value(key) :
+                parametersImportance.value(ParametersTag::createTag("normal")));
 
 }
 
@@ -129,7 +131,6 @@ bool TextData::isForbiddenKey(QKeyEvent * event)
     int key = event->key();
     if((mod == Qt::ControlModifier && key == 86) || (mod == Qt::ShiftModifier && key == Qt::Key_Insert)) return true; //запрет paste
     if((mod == Qt::ControlModifier && key == 90)) return true; //запрет ctrl+Z
-    if(key == 60 || key == 62) return true;                             //запрет на '<' и '>'
     if(event->text().length() == 0) return false;                       //всякая навигация
 
     if(cursor.hasSelection()) {
