@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "filefunction.h"
+#include "convertdata.h"
 
 #include "aboutus.h"
 
@@ -35,6 +36,7 @@ private:
     std::unique_ptr<SearchWidgetImportance> searchWidgetImportance;
 
     FileFunction *fileFunction;//Вихров
+    ConvertData *convertData;
 
     aboutus *signalAboutUs;
 
@@ -58,6 +60,10 @@ public slots:
     void slotSaveDocument(bool action);
     void slotCreateDocument();
     void slotCloceDocument();
+    /**/
+    void slotPrintDebug();
+    /**/
+
 signals:
     void signalSaveDocument(QString *text);
     void signalSaveDocumentAs(QString *text);

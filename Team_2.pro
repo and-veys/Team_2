@@ -17,6 +17,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     aboutus.cpp \
+    convertdata.cpp \
     edit_window.cpp \
     main.cpp \
     mainmenu.cpp \
@@ -28,6 +29,7 @@ SOURCES += \
 
 HEADERS += \
     aboutus.h \
+    convertdata.h \
     edit_window.h \
     mainmenu.h \
     mainwindow.h \

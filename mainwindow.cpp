@@ -3,7 +3,11 @@
 
 #include "edit_window.h"
 #include "mainmenu.h"
+
+#include "convertdata.h"
+
 #include "statusbar.h" // WND9-11
+
 
 #include <QMessageBox>
 
@@ -21,6 +25,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     MainMenu * menu = new MainMenu(this, &textData);
     setMenuBar(menu);
 
+
+    convertData = new ConvertData(this);
+    fileFunction = new FileFunction(this);
+   // mainEdit->setDisabled(true);//Гасим поле документа
+
     Team2StatusBar * stBar = new Team2StatusBar(this);
     setStatusBar(stBar);
 
@@ -28,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     fileFunction = new FileFunction(this);
     //mainEdit->setDisabled(true);//Гасим поле документа
+
 
     searchWidgetString.reset( new SearchWidgetString(QString("Поиск")));
     searchWidgetString->hide();
@@ -48,6 +58,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     /*Вихров*/    connect(this, SIGNAL(signalSaveDocumentAs(QString*)),fileFunction, SLOT(slotSaveFileAs(QString *)));
     /*Вихров*/    connect(menu, SIGNAL(closeDocument()), this, SLOT(slotCloceDocument()));
     /*Вихров*/    connect(this, SIGNAL(signalCloseDocument(QString *)),fileFunction, SLOT(slotCloseFile(QString *)) );
+connect(menu, SIGNAL(signalTest()),this, SLOT(slotPrintDebug()) );
+
 
     connect(menu, SIGNAL(setImportance(QString)), this, SLOT(setImportance(QString)));  //установка важности
 
@@ -115,11 +127,17 @@ connect(fileFunction, SIGNAL(signalFileDataReady(QString*)), this, SLOT(slotRcvF
 */
 void MainWindow::slotRcvFileData(QString *text){
     mainEdit->appendPlainText(*text);
+   // loadData(QString *gettingString, QPlainTextEdit *edtWin, TextData *textData)
+    convertData->loadData(text, mainEdit, &textData);
 }
 
 /**/
 void MainWindow::slotSaveDocument(bool action){
-    QString str = mainEdit->toPlainText();
+//    QString str = mainEdit->toPlainText();
+    QString str;
+           convertData->converterData(mainEdit,&textData, &str);
+
+//    qDebug() << "Try to save" << str;
     if(action)
         emit signalSaveDocumentAs(&str);
     else
@@ -142,5 +160,13 @@ void MainWindow::slotCloceDocument(){
     emit signalCloseDocument(&str);
     mainEdit->clear();
     mainEdit->setEnabled(false);
+}
+
+
+
+/**/
+void MainWindow::slotPrintDebug(){
+
+    //convertData->converterData(mainEdit, &textData);
 }
 

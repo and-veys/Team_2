@@ -35,15 +35,19 @@ public:
         NORMAL = 128
     };
 private:
-    QMap<int, QString> hiddenString;               //массив для спрятанных строк
+//    QMap<int, QString> hiddenString;               //массив для спрятанных строк
     QMap<QString, ParameterImportance *> parametersImportance;
     QMap<errorEnum, QString> errorTexts;
-    ParameterHide * parametersHide;
+//    ParameterHide * parametersHide;
     void sendErrorSignal(errorEnum key);
     ParameterImportance * getNormalText(){return getParameterImportance("!");};
 public:
+     ParameterHide * parametersHide;
+        QMap<int, QString> hiddenString;               //массив для спрятанных строк
     ParameterImportance * getParameterImportance(const QString &key);
     ParameterHide * getParameterHide(){return parametersHide;};
+    QString getHiddenString(int key) {return (hiddenString.contains(key) ? hiddenString.value(key): "");};
+
     QList<ParameterImportance *> getSortListImportance();
     void setImportance(QPlainTextEdit * wnd, QString & tag);
     void hideText(QPlainTextEdit * wnd);
@@ -67,7 +71,7 @@ public:
     bool allCharsFormat(QTextCursor cursor){return isCharFormat(cursor, true);};        //все символы формата объекта
     bool findCharsFormat(QTextCursor& cursor);                  //выделение строки текущего формат
     int findLimitFormat(QTextCursor cursor, bool next);
-
+    static QString createTag(const QString & tag){return "<" + QString(1) + tag.toUpper() + ">";};
 private:
     QColor color;
     QString tag;
