@@ -33,6 +33,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     Team2StatusBar * stBar = new Team2StatusBar(this);
     setStatusBar(stBar);
 
+    signalAboutUs = new aboutus(this);
+
     fileFunction = new FileFunction(this);
     //mainEdit->setDisabled(true);//Гасим поле документа
 
@@ -70,9 +72,11 @@ connect(menu, SIGNAL(signalTest()),this, SLOT(slotPrintDebug()) );
 //---------------------------------------------------
 //    connect(mainEdit, SIGNAL(cursorPositionChanged()), stBar, SLOT(checkChangeCursorPosition()));
     connect(mainEdit, SIGNAL(cursorPositionChanged()), stBar, SLOT(checkChangeCursorPosition()));
-    connect(this, SIGNAL(keyPressEvent(QKeyEvent *)), stBar, SLOT(checkKeyEvent(QKeyEvent *)));
-
+//###    connect(this, SIGNAL(keyPressEvent(QKeyEvent *)), stBar, SLOT(checkKeyEvent(QKeyEvent *)));
     connect(menu, SIGNAL(helpShow(QString)), this, SLOT(test_3(QString)));
+    connect(menu, SIGNAL(aboutUsShow(QString)), signalAboutUs, SLOT(slotAboutUs()));
+
+//###    connect(menu, SIGNAL(helpShow(QString)), this, SLOT(test_3(QString)));
     connect(&textData, SIGNAL(errorSetFormat(QString)), this, SLOT(selectInformation(QString))); //информация о неуспешном выделении текста
     connect(mainEdit, SIGNAL(isForbiddenKey(QKeyEvent *)), &textData, SLOT(isForbiddenKey(QKeyEvent *))); //запрет клавиш и мест
 //---------------------------------------------------
