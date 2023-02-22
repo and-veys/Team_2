@@ -16,7 +16,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    convertdata.cpp \
+   # convertdata.cpp \
     edit_window.cpp \
     main.cpp \
     mainmenu.cpp \
@@ -27,7 +27,7 @@ SOURCES += \
     filefunction.cpp
 
 HEADERS += \
-    convertdata.h \
+   # convertdata.h \
     edit_window.h \
     mainmenu.h \
     mainwindow.h \

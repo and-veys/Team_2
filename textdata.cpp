@@ -158,12 +158,72 @@ bool TextData::isForbiddenKey(QKeyEvent * event)
     return true;
 }
 
+QString TextData::convertToString(QPlainTextEdit *wnd)
+{
+    QTextCursor cursor = QTextCursor(wnd->textCursor());
+    QString tag_hide = parametersHide->getTag();
+    QString tag_cur;
+    QString result = "";
+    int hideKey;
+    bool br;
+    ParametersTag * current;
+    cursor.setPosition(0);
+    while(true) {
+        tag_cur = parametersHide->getTag(cursor.charFormat());
+        if(tag_hide == tag_cur) {
+            current = parametersHide;
+            hideKey = parametersHide->getHideKey(cursor);
+        }
+        else
+            current = getParameterImportance(tag_cur);
+        br = (cursor.positionInBlock() == 0 && cursor.position() != 0);
+        if(current->findCharsFormat(cursor)) {
+            if(tag_hide == tag_cur) {
+                if(br) result += QString(0x2029);
+                result += (tag_cur + getHiddenString(hideKey));
+            }
+            else
+                result += (tag_cur + cursor.selectedText());
+            cursor.clearSelection();
+        }
+        if(!cursor.movePosition(QTextCursor::NextCharacter)) break;
+    }
+    return result;
+}
+
+void TextData::convertFromString(const QString &str, QPlainTextEdit *wnd)
+{
+    QTextCursor cursor = QTextCursor(wnd->textCursor());
+    QString tag_hide = parametersHide->getTag();
+    QString tag_cur;
+    QStringList lst = str.split(ParametersTag::startTag());
+    QStringList current;
+    QTextCharFormat ch;
+    foreach(auto el, lst) {
+       current = el.split(ParametersTag::endTag());
+       if(current.length() == 1)  {
+           tag_cur = getNormalText()->getTag();
+           current.push_front(tag_cur);
+       }
+       else
+           tag_cur = ParametersTag::createTag(current.at(0));
+       if(current.at(1).length() == 0) continue;
+       ch = cursor.charFormat();
+       if(tag_cur == tag_hide) {
+           hiddenString.insert(parametersHide->setParameters(ch), current.at(1));
+           cursor.insertText(parametersHide->getReplacingText(), ch);
+       }
+       else {
+           getParameterImportance(tag_cur)->setParameters(ch);
+           cursor.insertText(current.at(1), ch);
+       }
+    }
+}
+
 //class ParametersTag -------------------------------------------------------------------------
 
 ParametersTag::ParametersTag(QString tag, QColor col): color(col), tag(tag)
-{
-
-
+{    
 }
 
 ParametersTag::~ParametersTag()
@@ -200,8 +260,8 @@ int ParametersTag::findLimitFormat(QTextCursor cursor, bool next)
     QString tag = getTag();
     QString cur_tag = tag;
     if(getTag(cursor.charFormat()) != tag) return cursor.position();
-
-    while(tag == cur_tag) {
+    int hideKey = getHideKey(cursor);
+    while(tag == cur_tag && hideKey == getHideKey(cursor)) {
         if(!cursor.movePosition(move)) return cursor.position();
         cur_tag = getTag(cursor.charFormat());
     }
@@ -226,7 +286,7 @@ bool ParametersTag::isCharFormat(QTextCursor & cursor, bool all) {
 
 
 //class ParameterHide --------------------------------------------------------------------------
-int ParameterHide::id = 0;
+int ParameterHide::id = 1;
 
 ParameterHide::ParameterHide(QString txt, QString tag, QColor col) : ParametersTag(tag, col)
 {

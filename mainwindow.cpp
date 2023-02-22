@@ -4,7 +4,7 @@
 #include "edit_window.h"
 #include "mainmenu.h"
 
-#include "convertdata.h"
+//#include "convertdata.h"
 
 #include "statusbar.h" // WND9-11
 
@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     setMenuBar(menu);
 
 
-    convertData = new ConvertData(this);
+   //convertData = new ConvertData(this);       //АМВ: Заблокировано до выяснения обстоятельств
     fileFunction = new FileFunction(this);
    // mainEdit->setDisabled(true);//Гасим поле документа
 
@@ -89,7 +89,7 @@ void MainWindow::search_importance_slot() {
 
 MainWindow::~MainWindow()
 {
-    fileFunction->~FileFunction();
+    //fileFunction->~FileFunction();        //АМВ: Это как??
 }
 
 void MainWindow::setImportance(QString tag)
@@ -122,18 +122,28 @@ void MainWindow::selectInformation(QString inf)
 connect(fileFunction, SIGNAL(signalFileDataReady(QString*)), this, SLOT(slotRcvFileData(QString*)));
 */
 void MainWindow::slotRcvFileData(QString *text){
-    mainEdit->appendPlainText(*text);
-   // loadData(QString *gettingString, QPlainTextEdit *edtWin, TextData *textData)
-    convertData->loadData(text, mainEdit, &textData);
+//АМВ Очень сложно - через сигналы, к тому же в объекте будет храниться первоначально загруженный текст файла!!
+
+/* АМВ: Закоментировал, convertData->loadData решает только частный случай
+   mainEdit->appendPlainText(*text);
+   loadData(QString *gettingString, QPlainTextEdit *edtWin, TextData *textData)
+   convertData->loadData(text, mainEdit, &textData);
+*/
+    textData.convertFromString(*text, mainEdit);
 }
 
 /**/
-void MainWindow::slotSaveDocument(bool action){
-//    QString str = mainEdit->toPlainText();
-    QString str;
-           convertData->converterData(mainEdit,&textData, &str);
+void MainWindow::slotSaveDocument(bool action){         //
 
-//    qDebug() << "Try to save" << str;
+/*  АМВ: Закоментировал, convertData->converterData решает только частный случай
+
+    QString str = mainEdit->toPlainText();
+    convertData->converterData(mainEdit,&textData, &str);
+    qDebug() << "Try to save" << str;
+*/
+
+
+    QString str = textData.convertToString(mainEdit);
     if(action)
         emit signalSaveDocumentAs(&str);
     else
