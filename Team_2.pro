@@ -16,7 +16,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    convertdata.cpp \
+   # convertdata.cpp \
+    aboutus.cpp \
     edit_window.cpp \
     main.cpp \
     mainmenu.cpp \
@@ -27,7 +28,8 @@ SOURCES += \
     filefunction.cpp
 
 HEADERS += \
-    convertdata.h \
+   # convertdata.h \
+    aboutus.h \
     edit_window.h \
     mainmenu.h \
     mainwindow.h \
@@ -43,3 +45,6 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    aboutUs.txt

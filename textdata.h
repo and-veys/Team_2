@@ -35,19 +35,16 @@ public:
         NORMAL = 128
     };
 private:
-//    QMap<int, QString> hiddenString;               //массив для спрятанных строк
+    QMap<int, QString> hiddenString;               //массив для спрятанных строк
     QMap<QString, ParameterImportance *> parametersImportance;
     QMap<errorEnum, QString> errorTexts;
-//    ParameterHide * parametersHide;
+    ParameterHide * parametersHide;
     void sendErrorSignal(errorEnum key);
     ParameterImportance * getNormalText(){return getParameterImportance("!");};
-public:
-     ParameterHide * parametersHide;
-        QMap<int, QString> hiddenString;               //массив для спрятанных строк
+public:     
     ParameterImportance * getParameterImportance(const QString &key);
     ParameterHide * getParameterHide(){return parametersHide;};
     QString getHiddenString(int key) {return (hiddenString.contains(key) ? hiddenString.value(key): "");};
-
     QList<ParameterImportance *> getSortListImportance();
     void setImportance(QPlainTextEdit * wnd, QString & tag);
     void hideText(QPlainTextEdit * wnd);
@@ -56,6 +53,8 @@ signals:
     void errorSetFormat(QString);
 public slots:
     bool isForbiddenKey(QKeyEvent * event);
+    QString convertToString(QPlainTextEdit * wnd);
+    void convertFromString(const QString & str, QPlainTextEdit * wnd);
 };
 
 
@@ -71,7 +70,10 @@ public:
     bool allCharsFormat(QTextCursor cursor){return isCharFormat(cursor, true);};        //все символы формата объекта
     bool findCharsFormat(QTextCursor& cursor);                  //выделение строки текущего формат
     int findLimitFormat(QTextCursor cursor, bool next);
-    static QString createTag(const QString & tag){return "<" + QString(1) + tag.toUpper() + ">";};
+    static QString createTag(const QString & tag){return startTag() + tag.toUpper() + endTag();};
+    static QString startTag(){return "<" + QString(1);};
+    static QString endTag(){return QString(1) + ">";};
+    int getHideKey(QTextCursor & cursor){return cursor.charFormat().property(2).toInt();};
 private:
     QColor color;
     QString tag;
@@ -96,7 +98,6 @@ public:
     QString getReplacingText(){return replacingText;};
     int setParameters(QTextCharFormat & ch);
     int getPlaceCursor(QTextCursor cursor, QTextCharFormat & ch);
-    int getHideKey(QTextCursor & cursor){return cursor.charFormat().property(2).toInt();};
 private:
     QString replacingText;
     static int id;        //для уникального идентификатора спрятанного текста

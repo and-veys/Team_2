@@ -11,6 +11,8 @@
 #include "filefunction.h"
 #include "convertdata.h"
 
+#include "aboutus.h"
+
 class QPlainTextEdit;
 class QPushButton;
 class EditWindow;
@@ -35,6 +37,8 @@ private:
 
     FileFunction *fileFunction;//Вихров
     ConvertData *convertData;
+
+    aboutus *signalAboutUs;
 
 private slots:
     void setImportance(QString tag);

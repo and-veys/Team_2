@@ -5,6 +5,7 @@
 #include <QFileDialog>
 #include <QFile>
 #include<QTextStream>
+#include <QTextCodec>
 
 
 FileFunction::FileFunction(QObject *parent) : QObject(parent)
@@ -18,11 +19,26 @@ FileFunction::FileFunction(QObject *parent) : QObject(parent)
 Для передачи данных излучаем сигнал
 */
 void FileFunction::slotOpenFile(){
-    QString fileName = QFileDialog::getOpenFileName(nullptr,("Открыть файл"), "/", ("Тип файла (*.txt)"));//Указали путь к файлу
+    QString fileName = QFileDialog::getOpenFileName(nullptr,("Открыть файл"), "/", ("Тип файла (*.tm2)"));//Указали путь к файлу
     if(fileName.isEmpty())return;//Если имя файла не указано
     file.setFileName(fileName);
     if(file.open(QIODevice::ReadWrite)){
-         textFromFile = QString(file.readAll());//прочитали данные из файла
+
+
+
+        QByteArray ba = file.readAll();//прочитали данные из файла
+        textFromFile = QString::fromUtf8(ba);      //АМВ: борьба с кириллицей
+
+        //qDebug() << ba;
+
+        //qDebug() << textFromFile;
+
+
+//        QTextCodec *codec = QTextCodec::codecForName("CP1251");
+//        QString str = codec->toUnicode(file.readAll());
+//fromLocal8bit()
+
+
         emit signalFileDataReady(&textFromFile);
     }
 }
@@ -42,9 +58,12 @@ void FileFunction::slotSaveFile(QString *data){
             //Переоткрываем файл с параметрами QIODevice::WriteOnly | QIODevice::Truncate чтобы перезаписать содержимое файла
             file.close();
             file.open(QIODevice::WriteOnly | QIODevice::Truncate);
+            file.write(data->toUtf8().constData());
+/*  АМВ: не работает с кирилицей
             qDebug()<<"Save";
             QTextStream writeStream(&file);
             writeStream << *data;
+ */
          }
     }
     else{
@@ -56,13 +75,17 @@ void FileFunction::slotSaveFile(QString *data){
 Сохранить файл под новым именем
 */
 void FileFunction::slotSaveFileAs(QString *data){
-    QString fileName = QFileDialog::getSaveFileName(nullptr,("Сохраниеть как.."), "/", ("Тип файла (*.txt)"));
+    QString fileName = QFileDialog::getSaveFileName(nullptr,("Сохраниеть как.."), "/", ("Тип файла (*.tm2)"));
     QFile file;
     file.setFileName(fileName);
     if(file.open(QIODevice::WriteOnly)){
-        QTextStream writeStream(&file);
-        writeStream << *data;
-    }
+        file.write(data->toUtf8().constData());
+/*  АМВ: не работает с кирилицей
+            QTextStream writeStream(&file);
+            writeStream << *data;
+ */
+
+     }
 }
 
 

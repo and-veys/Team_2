@@ -37,7 +37,7 @@ MainMenu::MainMenu(QWidget * par, TextData * dt):QMenuBar(par)
 
     menu = new QMenu("Справка");
     menu->addAction(getIcon(QStyle::SP_MessageBoxQuestion), "Помощь", [this]{emit helpShow("help");});
-    menu->addAction(getIcon(QStyle::SP_MessageBoxInformation), "О нас", [this]{emit helpShow("about");});
+    menu->addAction(getIcon(QStyle::SP_MessageBoxInformation), "О нас", [this]{emit aboutUsShow("about");});
     addMenu(menu);
 
     /***************************************/
