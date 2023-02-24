@@ -17,7 +17,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
    # convertdata.cpp \
-    aboutus.cpp \
+   # aboutus.cpp \
+    dialoghelp.cpp \
     edit_window.cpp \
     main.cpp \
     mainmenu.cpp \
@@ -29,7 +30,8 @@ SOURCES += \
 
 HEADERS += \
    # convertdata.h \
-    aboutus.h \
+   # aboutus.h \
+    dialoghelp.h \
     edit_window.h \
     mainmenu.h \
     mainwindow.h \
@@ -46,5 +48,7 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-DISTFILES += \
-    aboutUs.txt
+DISTFILES +=
+
+RESOURCES += \
+    resource.qrc

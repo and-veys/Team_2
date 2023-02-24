@@ -19,6 +19,7 @@ protected:
 
 signals:
     bool isForbiddenKey(QKeyEvent * event);
+    bool isHotKey(QKeyEvent * event);
 
 public slots:
     //TODO ------------ Тесты функциональности сигналов от форм поиска, потом удалить
