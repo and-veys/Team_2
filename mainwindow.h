@@ -11,7 +11,7 @@
 #include "filefunction.h"
 #include "convertdata.h"
 
-#include "aboutus.h"
+//#include "aboutus.h"
 
 class QPlainTextEdit;
 class QPushButton;
@@ -36,14 +36,15 @@ private:
     std::unique_ptr<SearchWidgetImportance> searchWidgetImportance;
 
     FileFunction *fileFunction;//Вихров
-    ConvertData *convertData;
+    //ConvertData *convertData;
 
-    aboutus *signalAboutUs;
+    //aboutus *signalAboutUs;
 
 private slots:
     void setImportance(QString tag);
     void hideText(bool hide);
     void selectInformation(QString inf);
+    void helpShow(QString type);
     //TODO ------------ Тесты функциональности, потом удалить
     void test() {qDebug() << "OK";};
     void test_2(bool a) {qDebug() << "OK:" << (a?"+":"-");};

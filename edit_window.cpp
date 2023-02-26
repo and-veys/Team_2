@@ -12,10 +12,13 @@ EditWindow::EditWindow(QWidget *parent) :
 
 }
 
-void EditWindow::keyPressEvent(QKeyEvent *event)    //здесь же будем ловить горячие клавиши
+void EditWindow::keyPressEvent(QKeyEvent *event)
 {
+    qDebug() << event->key();
+    bool hotKey = emit isHotKey(event);
+    if(hotKey) return;                              //обработка горячих клавиш меню
     bool forbidden = emit isForbiddenKey(event);
-    if(forbidden) return;   //запрет на нажатие некоторых клавиш и мест вставки
+    if(forbidden) return;                           //запрет на нажатие некоторых клавиш и мест вставки
 
     QPlainTextEdit::keyPressEvent(event);
 }
