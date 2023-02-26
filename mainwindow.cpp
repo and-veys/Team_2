@@ -6,6 +6,7 @@
 
 //#include "convertdata.h"
 
+#include "dialoghelp.h"
 #include "statusbar.h" // WND9-11
 
 
@@ -33,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     Team2StatusBar * stBar = new Team2StatusBar(this);
     setStatusBar(stBar);
 
-    signalAboutUs = new aboutus(this);
+    //signalAboutUs = new aboutus(this);
 
     fileFunction = new FileFunction(this);
     //mainEdit->setDisabled(true);//Гасим поле документа
@@ -73,12 +74,13 @@ connect(menu, SIGNAL(signalTest()),this, SLOT(slotPrintDebug()) );
 //    connect(mainEdit, SIGNAL(cursorPositionChanged()), stBar, SLOT(checkChangeCursorPosition()));
     connect(mainEdit, SIGNAL(cursorPositionChanged()), stBar, SLOT(checkChangeCursorPosition()));
 //###    connect(this, SIGNAL(keyPressEvent(QKeyEvent *)), stBar, SLOT(checkKeyEvent(QKeyEvent *)));
-    connect(menu, SIGNAL(helpShow(QString)), this, SLOT(test_3(QString)));
-    connect(menu, SIGNAL(aboutUsShow(QString)), signalAboutUs, SLOT(slotAboutUs()));
+    connect(menu, SIGNAL(helpShow(QString)), this, SLOT(helpShow(QString)));
+    //connect(menu, SIGNAL(aboutUsShow(QString)), signalAboutUs, SLOT(slotAboutUs()));
 
 //###    connect(menu, SIGNAL(helpShow(QString)), this, SLOT(test_3(QString)));
     connect(&textData, SIGNAL(errorSetFormat(QString)), this, SLOT(selectInformation(QString))); //информация о неуспешном выделении текста
     connect(mainEdit, SIGNAL(isForbiddenKey(QKeyEvent *)), &textData, SLOT(isForbiddenKey(QKeyEvent *))); //запрет клавиш и мест
+    connect(mainEdit, SIGNAL(isHotKey(QKeyEvent *)), menu, SLOT(isHotKey(QKeyEvent *))); //горячие клавиши
 //---------------------------------------------------
 }
 
@@ -114,7 +116,13 @@ void MainWindow::hideText(bool hide)
 void MainWindow::selectInformation(QString inf)
 {
     //Можно добавить в строку состояния или еще куда-нибудь
-   QMessageBox::information(this, "You can`t do that", inf);
+    QMessageBox::information(this, "You can`t do that", inf);
+}
+
+void MainWindow::helpShow(QString type)
+{
+    DialogHelp dlg(type, this);
+    dlg.exec();
 }
 
 
@@ -159,7 +167,8 @@ void MainWindow::slotSaveDocument(bool action){         //
 просто делаем поле активным
 */
 void MainWindow::slotCreateDocument(){
-    mainEdit->setDisabled(false);
+    qDebug() << "CREATE !!";
+    //mainEdit->setDisabled(false);
 }
 
 /*
