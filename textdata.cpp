@@ -100,8 +100,6 @@ void TextData::showText(QPlainTextEdit *wnd)
     cursor.insertText(ins, ch);
     cursor.setPosition(start, QTextCursor::KeepAnchor);
     wnd->setTextCursor(cursor);
-
-
 }
 
 void TextData::hideText(QPlainTextEdit *wnd)
