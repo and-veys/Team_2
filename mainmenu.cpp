@@ -61,6 +61,10 @@ MainMenu::MainMenu(QWidget * par, TextData * dt):QMenuBar(par)
     addHotKey(
         menu->addAction(getIcon(QStyle::SP_MessageBoxWarning),"По важности (CTRL+I)", [this]{emit searchImportance();}),
         Qt::ControlModifier, 73);
+
+    addHotKey(
+        menu->addAction(getIcon(QStyle::SP_MediaPause),"По спрятанному (CTRL+T)", [this]{emit searchHide();}),
+        Qt::ControlModifier, 84);
     addMenu(menu);
 
     menu = new QMenu("Справка");

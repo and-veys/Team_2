@@ -1,11 +1,12 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
+//#include "ui_mainwindow.h"
 
 #include "edit_window.h"
 #include "mainmenu.h"
 
 //#include "convertdata.h"
 
+#include "dialogfind.h"
 #include "dialoghelp.h"
 #include "statusbar.h" // WND9-11
 
@@ -17,14 +18,37 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
     mainEdit = new EditWindow(this);
     setCentralWidget(mainEdit);
-     resize(700, 400);
+    resize(700, 400);
 //настройки фона окно, можно и вытащить потом отдельно в диалоговон окно
     QFont f = font();
     f.setPointSize(12);
     setFont(f);
 //-----------------------------------------------------------
+
+
+
+//-------------- инициализация диалоговых окон поиска
+
+    dlgString = new DialogFindString("Поиск по строке", this);
+    dlgHide = new DialogFindHide(textData.getParameterHide(), "Поиск по спрятанному", this);
+    dlgImportance = new DialogFindImportance(textData.getSortListImportance(), "Поиск по важности", this);
+
+    connect(dlgString, &DialogFind::search, this, &MainWindow::searchText);
+    connect(dlgHide, &DialogFind::search, this, &MainWindow::searchHide);
+    connect(dlgImportance, &DialogFind::search, this, &MainWindow::searchImportance);
+//------------------------------------------------------------
+
+//-------------- инициализация меню
     MainMenu * menu = new MainMenu(this, &textData);
     setMenuBar(menu);
+
+    connect(menu, &MainMenu::searchString, this, [this](){dlgString->show();});
+    connect(menu, &MainMenu::searchImportance, this, [this](){dlgImportance->show();});
+    connect(menu, &MainMenu::searchHide, this, [this](){dlgHide->show();});
+
+
+
+//------------------------------------------------------------
 
 
    //convertData = new ConvertData(this);       //АМВ: Заблокировано до выяснения обстоятельств
@@ -40,6 +64,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     //mainEdit->setDisabled(true);//Гасим поле документа
 
 
+
+
+//-------------------------------------
+
+/*
     searchWidgetString.reset( new SearchWidgetString(QString("Поиск")));
     searchWidgetString->hide();
     searchWidgetImportance.reset(new SearchWidgetImportance(QString("Поиск"), textData));
@@ -49,6 +78,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(searchWidgetString.get(), &SearchWidgetString::searchNext, mainEdit, &EditWindow::test_search_next_slot);
     connect(searchWidgetImportance.get(), &SearchWidgetString::searchPrev, mainEdit, &EditWindow::test_search_prev_slot);
     connect(searchWidgetImportance.get(), &SearchWidgetString::searchNext, mainEdit, &EditWindow::test_search_next_slot);
+
+*/
+
 //---------------------------------------------------
 //Подставляйте свои receiver-объекты и их слоты
     /*Вихров*/    connect(menu, SIGNAL(createDocument()), this, SLOT(slotCreateDocument()));
@@ -59,7 +91,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     /*Вихров*/    connect(this, SIGNAL(signalSaveDocumentAs(QString*)),fileFunction, SLOT(slotSaveFileAs(QString *)));
     /*Вихров*/    connect(menu, SIGNAL(closeDocument()), this, SLOT(slotCloceDocument()));
     /*Вихров*/    connect(this, SIGNAL(signalCloseDocument(QString *)),fileFunction, SLOT(slotCloseFile(QString *)) );
-connect(menu, SIGNAL(signalTest()),this, SLOT(slotPrintDebug()) );
+//connect(menu, SIGNAL(signalTest()),this, SLOT(slotPrintDebug()) );
 
 
     connect(menu, SIGNAL(setImportance(QString)), this, SLOT(setImportance(QString)));  //установка важности
@@ -67,8 +99,7 @@ connect(menu, SIGNAL(signalTest()),this, SLOT(slotPrintDebug()) );
     connect(menu, SIGNAL(hideText(bool)), this, SLOT(hideText(bool)));                  //установка спратать/показать
 
 
-    connect(menu, SIGNAL(searchString()), this, SLOT(search_string_slot()));
-    connect(menu, SIGNAL(searchImportance()), this, SLOT(search_importance_slot()));
+
 
 //---------------------------------------------------
 //    connect(mainEdit, SIGNAL(cursorPositionChanged()), stBar, SLOT(checkChangeCursorPosition()));
@@ -84,6 +115,9 @@ connect(menu, SIGNAL(signalTest()),this, SLOT(slotPrintDebug()) );
 //---------------------------------------------------
 }
 
+
+
+/*
 //Тесты сигналов поиска
 void MainWindow::search_string_slot() {
     searchWidgetString->show();
@@ -91,10 +125,18 @@ void MainWindow::search_string_slot() {
 void MainWindow::search_importance_slot() {
     searchWidgetImportance->show();
 }
+
+*/
 //---------------------------------------------------
 
 MainWindow::~MainWindow()
 {
+    delete dlgString;
+    delete dlgHide;
+    delete dlgImportance;
+
+
+
     //fileFunction->~FileFunction();        //АМВ: Это как??
 }
 
@@ -115,7 +157,7 @@ void MainWindow::hideText(bool hide)
 
 void MainWindow::selectInformation(QString inf)
 {
-    //Можно добавить в строку состояния или еще куда-нибудь
+    //TODO Можно добавить в строку состояния или еще куда-нибудь
     QMessageBox::information(this, "You can`t do that", inf);
 }
 
@@ -123,6 +165,23 @@ void MainWindow::helpShow(QString type)
 {
     DialogHelp dlg(type, this);
     dlg.exec();
+}
+
+void MainWindow::searchText(DialogFind::searchEnum param, const QString & str)
+{
+    qDebug() << "TEXT" << ((param == DialogFind::NEXT) ? "next" : "prev") << str;
+
+}
+
+void MainWindow::searchImportance(DialogFind::searchEnum param, const QString &str)
+{
+    qDebug() << "IMP" << ((param == DialogFind::NEXT) ? "next" : "prev") << str;
+
+}
+
+void MainWindow::searchHide(DialogFind::searchEnum param, const QString &str)
+{
+    qDebug() << "HIDE" << ((param == DialogFind::NEXT) ? "next" : "prev") << str;
 }
 
 

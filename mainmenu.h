@@ -20,6 +20,7 @@ signals:
     void closeDocument();
     void searchString();
     void searchImportance();
+    void searchHide();
     void setImportance(QString);
     void hideText(bool);
     void unhideText(bool);

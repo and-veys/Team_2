@@ -3,14 +3,17 @@
 
 #include <QMainWindow>
 #include "textdata.h"
+
+
 #include <QDebug>
 
-#include "search_widgets.h"
+//#include "search_widgets.h"
 #include <memory>
+#include "dialogfind.h"
+
 
 #include "filefunction.h"
-#include "convertdata.h"
-
+//#include "convertdata.h"
 //#include "aboutus.h"
 
 class QPlainTextEdit;
@@ -32,8 +35,13 @@ public:
 private:
     EditWindow* mainEdit;
     TextData textData;
-    std::unique_ptr<SearchWidgetString> searchWidgetString;
-    std::unique_ptr<SearchWidgetImportance> searchWidgetImportance;
+    DialogFindString * dlgString;
+    DialogFindHide * dlgHide;
+    DialogFindImportance * dlgImportance;
+
+
+    //std::unique_ptr<SearchWidgetString> searchWidgetString;
+    //std::unique_ptr<SearchWidgetImportance> searchWidgetImportance;
 
     FileFunction *fileFunction;//Вихров
     //ConvertData *convertData;
@@ -45,14 +53,22 @@ private slots:
     void hideText(bool hide);
     void selectInformation(QString inf);
     void helpShow(QString type);
+    void searchText(DialogFind::searchEnum param, const QString & str);
+    void searchImportance(DialogFind::searchEnum param, const QString & str);
+    void searchHide(DialogFind::searchEnum param, const QString & str);
+
+
+
+
+
     //TODO ------------ Тесты функциональности, потом удалить
     void test() {qDebug() << "OK";};
     void test_2(bool a) {qDebug() << "OK:" << (a?"+":"-");};
     void test_3(QString a){qDebug() << a;};
     //---------------------------------------------------
 
-    void search_string_slot();
-    void search_importance_slot();
+//    void search_string_slot();
+//    void search_importance_slot();
 
 
     //Вихров
