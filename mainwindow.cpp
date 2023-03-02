@@ -10,53 +10,67 @@
 #include "dialoghelp.h"
 #include "statusbar.h" // WND9-11
 
-
 #include <QMessageBox>
 
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
+//-----------------------------------------------------------
+//-------------- настройки главного окна
+// TODO можно вытащить потом отдельно в диалоговое окно пользовательских настроек
+
+
+    setWindowTitle("Team #2:");
+    resize(1000, 400);
+    connect(&textData, &TextData::errorSetFormat, this, &MainWindow::selectInformation);
+//------------------------------------------------------------
+//-------------- инициализация меню
+
+    MainMenu * menu = new MainMenu(this, &textData);
+    setMenuBar(menu);
+    connect(menu, &MainMenu::searchString, this, [this](){dlgString->show();});
+    connect(menu, &MainMenu::searchImportance, this, [this](){dlgImportance->show();});
+    connect(menu, &MainMenu::searchHide, this, [this](){dlgHide->show();});
+//-----------------------------------------------------------
+//-------------- инициализация строки состояния
+
+    Team2StatusBar * stBar = new Team2StatusBar(this, &textData);
+    setStatusBar(stBar);    
+    connect(&textData, &TextData::errorSetFormat, this, [stBar](QString s){emit stBar->changeMessage(s);});
+
+//------------------------------------------------------------
+//-------------- инициализация виджета ввода текста
+
     mainEdit = new EditWindow(this);
     setCentralWidget(mainEdit);
-    resize(700, 400);
-//настройки фона окно, можно и вытащить потом отдельно в диалоговон окно
-    QFont f = font();
-    f.setPointSize(12);
-    setFont(f);
+    connect(mainEdit, SIGNAL(isForbiddenKey(QKeyEvent *)), &textData, SLOT(isForbiddenKey(QKeyEvent *)));   //запрет клавиш и мест
+    connect(mainEdit, SIGNAL(isHotKey(QKeyEvent *)), menu, SLOT(isHotKey(QKeyEvent *)));                    //горячие клавиши
+    connect(mainEdit, &EditWindow::cursorPositionChanged, stBar, &Team2StatusBar::checkChangeCursorPosition);
+    connect(mainEdit, &EditWindow::keyPressSignal, stBar, &Team2StatusBar::checkKeyEvent);
+
 //-----------------------------------------------------------
-
-
-
 //-------------- инициализация диалоговых окон поиска
 
     dlgString = new DialogFindString("Поиск по строке", this);
     dlgHide = new DialogFindHide(textData.getParameterHide(), "Поиск по спрятанному", this);
     dlgImportance = new DialogFindImportance(textData.getSortListImportance(), "Поиск по важности", this);
-
     connect(dlgString, &DialogFind::search, this, &MainWindow::searchText);
     connect(dlgHide, &DialogFind::search, this, &MainWindow::searchHide);
     connect(dlgImportance, &DialogFind::search, this, &MainWindow::searchImportance);
 //------------------------------------------------------------
 
-//-------------- инициализация меню
-    MainMenu * menu = new MainMenu(this, &textData);
-    setMenuBar(menu);
-
-    connect(menu, &MainMenu::searchString, this, [this](){dlgString->show();});
-    connect(menu, &MainMenu::searchImportance, this, [this](){dlgImportance->show();});
-    connect(menu, &MainMenu::searchHide, this, [this](){dlgHide->show();});
 
 
 
-//------------------------------------------------------------
+
+
 
 
    //convertData = new ConvertData(this);       //АМВ: Заблокировано до выяснения обстоятельств
     fileFunction = new FileFunction(this);
    // mainEdit->setDisabled(true);//Гасим поле документа
 
-    Team2StatusBar * stBar = new Team2StatusBar(this);
-    setStatusBar(stBar);
+
 
     //signalAboutUs = new aboutus(this);
 
@@ -103,15 +117,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 //---------------------------------------------------
 //    connect(mainEdit, SIGNAL(cursorPositionChanged()), stBar, SLOT(checkChangeCursorPosition()));
-    connect(mainEdit, SIGNAL(cursorPositionChanged()), stBar, SLOT(checkChangeCursorPosition()));
+  //  connect(mainEdit, SIGNAL(cursorPositionChanged()), stBar, SLOT(checkChangeCursorPosition()));
 //###    connect(this, SIGNAL(keyPressEvent(QKeyEvent *)), stBar, SLOT(checkKeyEvent(QKeyEvent *)));
     connect(menu, SIGNAL(helpShow(QString)), this, SLOT(helpShow(QString)));
     //connect(menu, SIGNAL(aboutUsShow(QString)), signalAboutUs, SLOT(slotAboutUs()));
 
 //###    connect(menu, SIGNAL(helpShow(QString)), this, SLOT(test_3(QString)));
-    connect(&textData, SIGNAL(errorSetFormat(QString)), this, SLOT(selectInformation(QString))); //информация о неуспешном выделении текста
-    connect(mainEdit, SIGNAL(isForbiddenKey(QKeyEvent *)), &textData, SLOT(isForbiddenKey(QKeyEvent *))); //запрет клавиш и мест
-    connect(mainEdit, SIGNAL(isHotKey(QKeyEvent *)), menu, SLOT(isHotKey(QKeyEvent *))); //горячие клавиши
+     //информация о неуспешном выделении текста
+
 //---------------------------------------------------
 }
 
