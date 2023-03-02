@@ -50,7 +50,7 @@ class DialogFindImportance : public DialogFind {
 public:
     DialogFindImportance(QList<ParameterImportance *> imp, const QString & title, QWidget *parent = nullptr);
 public slots:
-    void setInformation(int ind) {searchData = combo->currentData().toString();};
+    void setInformation(int) {searchData = combo->currentData().toString();};
 private:
     QComboBox * combo;
 };

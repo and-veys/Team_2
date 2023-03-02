@@ -14,23 +14,22 @@ MainMenu::MainMenu(QWidget * par, TextData * dt):QMenuBar(par)
           hotKey.insert(key, new HotKey(act, mod, key));
     };
 
-
     menu = new QMenu("Файл");
     addHotKey(
         menu->addAction(getIcon(QStyle::SP_FileIcon), "Создать (CTRL+N)", [this]{emit createDocument();}),
-        Qt::ControlModifier, 78);
+        Qt::ControlModifier, Qt::Key_N);
     addHotKey(
          menu->addAction(getIcon(QStyle::SP_DialogOpenButton), "Открыть (CTRL+O)", [this]{emit loadDocument();}),
-         Qt::ControlModifier, 79);
+         Qt::ControlModifier, Qt::Key_O);
     addHotKey(
          menu->addAction(getIcon(QStyle::SP_DialogSaveButton), "Сохранить (CTRL+A)", [this]{emit saveDocument(false);}),
-         Qt::ControlModifier, 65);
+         Qt::ControlModifier, Qt::Key_A);
     addHotKey(
         menu->addAction(getIcon(QStyle::SP_DialogSaveButton), "Сохранить как (CTRL+B)", [this]{emit saveDocument(true);}),
-         Qt::ControlModifier, 66);
+         Qt::ControlModifier, Qt::Key_B);
     addHotKey(
         menu->addAction(getIcon(QStyle::SP_DialogCloseButton), "Закрыть (CTRL+C)", [this]{emit closeDocument();}),
-         Qt::ControlModifier, 67);
+         Qt::ControlModifier, Qt::Key_C);
     addMenu(menu);
 
     menu = new QMenu("Важность");
@@ -40,7 +39,7 @@ MainMenu::MainMenu(QWidget * par, TextData * dt):QMenuBar(par)
         ic.fill(el->getColor());
         addHotKey(
             menu->addAction(ic, el->getNameImportance() + " (CTRL+" + QString::number(i) + ")", [this, el]{emit setImportance(el->getTag());}),
-            Qt::ControlModifier, 48+i);
+            Qt::ControlModifier, Qt::Key_0 + i);
         ++i;
     }
     addMenu(menu);
@@ -48,32 +47,32 @@ MainMenu::MainMenu(QWidget * par, TextData * dt):QMenuBar(par)
     menu = new QMenu("Скрытость");
     addHotKey(
         menu->addAction(getIcon(QStyle::SP_DirClosedIcon), "Скрыть (CTRL+H)", [this]{emit hideText(true);}),
-         Qt::ControlModifier, 72);
+         Qt::ControlModifier, Qt::Key_H);
     addHotKey(
         menu->addAction(getIcon(QStyle::SP_DirOpenIcon), "Показать (CTRL+S)", [this]{emit hideText(false);}),
-        Qt::ControlModifier, 83);
+        Qt::ControlModifier, Qt::Key_S);
     addMenu(menu);
 
     menu = new QMenu("Поиск");
     addHotKey(
         menu->addAction(getIcon(QStyle::SP_FileDialogContentsView),"По строке (CTRL+R)", [this]{emit searchString();}),
-        Qt::ControlModifier, 82);
+        Qt::ControlModifier, Qt::Key_R);
     addHotKey(
         menu->addAction(getIcon(QStyle::SP_MessageBoxWarning),"По важности (CTRL+I)", [this]{emit searchImportance();}),
-        Qt::ControlModifier, 73);
+        Qt::ControlModifier, Qt::Key_I);
 
     addHotKey(
         menu->addAction(getIcon(QStyle::SP_MediaPause),"По спрятанному (CTRL+T)", [this]{emit searchHide();}),
-        Qt::ControlModifier, 84);
+        Qt::ControlModifier, Qt::Key_T);
     addMenu(menu);
 
     menu = new QMenu("Справка");
     addHotKey(
         menu->addAction(getIcon(QStyle::SP_MessageBoxQuestion), "Помощь (CTRL+W)", [this]{emit helpShow("help");}),
-        Qt::ControlModifier, 87);
+        Qt::ControlModifier, Qt::Key_W);
     addHotKey(
         menu->addAction(getIcon(QStyle::SP_MessageBoxInformation), "О нас (CTRL+U)", [this]{emit helpShow("about");}),
-        Qt::ControlModifier, 85);
+        Qt::ControlModifier, Qt::Key_U);
     addMenu(menu);
 }
 

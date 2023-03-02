@@ -31,6 +31,7 @@ void EditWindow::contextMenuEvent(QContextMenuEvent *event)
 
 void EditWindow::focusInEvent(QFocusEvent *event)
 {
+
     emit cursorPositionChanged();
     QPlainTextEdit::focusInEvent(event);
 }

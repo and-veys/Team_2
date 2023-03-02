@@ -21,7 +21,6 @@ Team2StatusBar::Team2StatusBar(QWidget * par, TextData * dt):QStatusBar(par)
     QLabel * bl = createLabel();
     QLabel * ch = createLabel();
 
-
     auto hd = dt->getParameterHide();
     namesImportance.insert(hd->getTag(), hd->getNameHide());
     auto im = dt->getSortListImportance();
@@ -50,7 +49,10 @@ void Team2StatusBar::checkChangeCursorPosition()
         lst[1] = QString::number(n).rightJustified(lst.at(1).length(), '0');
         return lst.join(" ");
     };
-    emit this->changeCurrentBlock(getT(cursor.blockNumber(), "BLOCK: ###"));
-    emit this->changePositionInBlock(getT(cursor.positionInBlock(), "POS: #####"));
-    emit this->changeImportance(namesImportance.value(ParametersTag::getTag(cursor.charFormat())));
+    QString tag = ParametersTag::getTag(cursor.charFormat());
+    if(namesImportance.contains(tag)) tag = namesImportance.value(tag);
+    else tag = "";
+    emit this->changeCurrentBlock(getT(cursor.blockNumber()+1, "BLOCK: ###"));
+    emit this->changePositionInBlock(getT(cursor.positionInBlock()+1, "POS: #####"));
+    emit this->changeImportance(tag);
 }
