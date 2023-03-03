@@ -140,6 +140,7 @@ void MainWindow::createNewDocument()
     textData.convertFromString("A", mainEdit);
     mainEdit->clear();
     setWindowsCaption();
+    emit sendMessage("Новый документ создан");
 }
 void MainWindow::setWindowsCaption(const QString &cap)
 {
@@ -180,8 +181,17 @@ void MainWindow::slotOpenFile() {
         if(fl) {
            mainFile = fl;
            QString res;
-           if(mainFile->load(res))
+           if(mainFile->load(res)) {
                 textData.convertFromString(res, mainEdit);
+                QTextCursor cursor = mainEdit->textCursor();
+                cursor.setPosition(0);
+                mainEdit->setTextCursor(cursor);
+                if(!mainFile->isTM2File()) {
+                    delete mainFile;
+                    mainFile = nullptr;
+                    setWindowsCaption();
+                }
+           }
         }
     }
 }

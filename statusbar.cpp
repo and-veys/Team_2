@@ -32,8 +32,6 @@ Team2StatusBar::Team2StatusBar(QWidget * par, TextData * dt):QStatusBar(par)
     connect(this, &Team2StatusBar::changeCurrentBlock, this, [bl](const QString & s){bl->setText(s);});
     connect(this, &Team2StatusBar::changePositionInBlock, this, [ch](const QString & s){ch->setText(s);});
     connect(this, &Team2StatusBar::changeImportance, this, [imp](const QString & s){imp->setText(s);});
-
-    mess->setText("Good day...");
 }
 void Team2StatusBar::checkKeyEvent(QKeyEvent *event)
 {
