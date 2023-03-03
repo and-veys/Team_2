@@ -48,8 +48,11 @@ private slots:
     void slotCreateDocument();
     void slotOpenFile();
     void slotSaveDocument(bool as);
-    void slotCloseWindow();
 signals:
     void sendMessage(QString);
+
+    // QWidget interface
+protected:
+    void closeEvent(QCloseEvent *event);
 };
 #endif // MAINWINDOW_H

@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(menu, &MainMenu::createDocument, this, &MainWindow::slotCreateDocument);
     connect(menu, &MainMenu::loadDocument, this, &MainWindow::slotOpenFile);
     connect(menu, &MainMenu::saveDocument, this, &MainWindow::slotSaveDocument);
-    connect(menu, &MainMenu::closeDocument, this, &MainWindow::slotCloseWindow);
+    connect(menu, &MainMenu::closeDocument, this, [this](){close();});
     connect(menu, &MainMenu::setImportance, this, &MainWindow::setImportance);  //установка важности
     connect(menu, &MainMenu::hideText, this, &MainWindow::hideText);            //установка спратать/показать
     connect(menu, &MainMenu::searchString, this, [this](){dlgString->show();});
@@ -137,7 +137,7 @@ void MainWindow::createNewDocument()
         delete mainFile;
     textData.clear();
     mainFile = nullptr;
-    textData.convertFromString(textData.getNormalText()->getTag()+"A", mainEdit);
+    textData.convertFromString("A", mainEdit);
     mainEdit->clear();
     setWindowsCaption();
 }
@@ -186,9 +186,9 @@ void MainWindow::slotOpenFile() {
     }
 }
 
-void MainWindow::slotCloseWindow(){
-    if(saveCurrentDocument())
-        close();
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if(!saveCurrentDocument()) event->ignore();
 }
 
 

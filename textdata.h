@@ -39,10 +39,9 @@ private:
     QMap<errorEnum, QString> errorTexts;
     ParameterHide * parametersHide;
     void sendErrorSignal(errorEnum key);
-
-public:     
-    ParameterImportance * getParameterImportance(const QString &key);
     ParameterImportance * getNormalText(){return getParameterImportance("!");};
+public:     
+    ParameterImportance * getParameterImportance(const QString &key);    
     ParameterHide * getParameterHide(){return parametersHide;};
     QString getHiddenString(int key) {return (hiddenString.contains(key) ? hiddenString.value(key): "");};
     QList<ParameterImportance *> getSortListImportance();
