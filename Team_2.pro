@@ -23,11 +23,12 @@ SOURCES += \
     dialoghelp.cpp \
     edit_window.cpp \
     main.cpp \
+    mainfile.cpp \
     mainmenu.cpp \
     mainwindow.cpp \
     statusbar.cpp \
-    textdata.cpp \
-    filefunction.cpp
+    textdata.cpp
+    #filefunction.cpp
 
 HEADERS += \
    # convertdata.h \
@@ -36,11 +37,12 @@ HEADERS += \
     dialogfind.h \
     dialoghelp.h \
     edit_window.h \
+    mainfile.h \
     mainmenu.h \
     mainwindow.h \
     statusbar.h \
-    textdata.h \
-    filefunction.h
+    textdata.h
+    #filefunction.h
 
 FORMS += \
     mainwindow.ui

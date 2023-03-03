@@ -3,18 +3,9 @@
 
 #include <QMainWindow>
 #include "textdata.h"
-
-
-#include <QDebug>
-
-//#include "search_widgets.h"
-#include <memory>
 #include "dialogfind.h"
-
-
-#include "filefunction.h"
-//#include "convertdata.h"
-//#include "aboutus.h"
+#include "mainfile.h"
+#include <QDebug>
 
 class QPlainTextEdit;
 class QPushButton;
@@ -38,15 +29,12 @@ private:
     DialogFindString * dlgString;
     DialogFindHide * dlgHide;
     DialogFindImportance * dlgImportance;
+    MainFile * mainFile;
 
-
-    //std::unique_ptr<SearchWidgetString> searchWidgetString;
-    //std::unique_ptr<SearchWidgetImportance> searchWidgetImportance;
-
-    FileFunction *fileFunction;//Вихров
-    //ConvertData *convertData;
-
-    //aboutus *signalAboutUs;
+    bool saveCurrentDocument();
+    void createNewDocument();
+    void setWindowsCaption(const QString & cap = "Новый документ");
+    MainFile * createFile(bool save);
 
 private slots:
     void setImportance(QString tag);
@@ -57,34 +45,11 @@ private slots:
     void searchImportance(DialogFind::searchEnum param, const QString & str);
     void searchHide(DialogFind::searchEnum param, const QString & str);
 
-
-
-
-
-    //TODO ------------ Тесты функциональности, потом удалить
-    void test() {qDebug() << "OK";};
-    void test_2(bool a) {qDebug() << "OK:" << (a?"+":"-");};
-    void test_3(QString a){qDebug() << a;};
-    //---------------------------------------------------
-
-//    void search_string_slot();
-//    void search_importance_slot();
-
-
-    //Вихров
-public slots:
-    void slotRcvFileData(QString *text);
-    void slotSaveDocument(bool action);
     void slotCreateDocument();
-    void slotCloceDocument();
-    /**/
-    void slotPrintDebug();
-    /**/
-
+    void slotOpenFile();
+    void slotSaveDocument(bool as);
+    void slotCloseWindow();
 signals:
-    void signalSaveDocument(QString *text);
-    void signalSaveDocumentAs(QString *text);
-    void signalCloseDocument(QString *text);
-
+    void sendMessage(QString);
 };
 #endif // MAINWINDOW_H

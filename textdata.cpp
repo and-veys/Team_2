@@ -17,11 +17,11 @@ TextData::TextData() : QObject()
     addImportance("imp", "Важный текст",  Qt::green);
     addImportance("high_imp", "Очень важный текст",  Qt::red);
 
-    errorTexts.insert(NOT_SELECT, "Nothing is selected");
-    errorTexts.insert(HIDE_SELECT, "There is a hidden part in the selection text");
-    errorTexts.insert(SOME_SELECT, "Something is selected");
-    errorTexts.insert(NOT_HIDE, "This isn`t a hidden part");
-    errorTexts.insert(NOT_NORMAL, "There isn't a simple part");
+    errorTexts.insert(NOT_SELECT, "Ничего не выбрано");
+    errorTexts.insert(HIDE_SELECT, "Имеется спрятанная часть в выделенном тексте");
+    errorTexts.insert(SOME_SELECT, "Что-то выделено");
+    errorTexts.insert(NOT_HIDE, "Это не спратанный текст");
+    errorTexts.insert(NOT_NORMAL, "Это не обычный текст");
 }
 
 
@@ -143,11 +143,12 @@ bool TextData::isForbiddenKey(QKeyEvent * event)
         return false;
     }
     QTextCharFormat ch;
-    int flag = parametersHide->getPlaceCursor(cursor, ch);
-    if(flag == NOT || flag == START) return false;
+    int flag = parametersHide->getPlaceCursor(cursor, ch);    
+    if(flag == NOT) return false;
     if(flag == CENTER) return true;
     if(key == Qt::Key_Delete) return (flag & START);
     if(key == Qt::Key_Backspace) return (flag & END);
+    if(flag == START) return false;
 
     if(flag & NORMAL || getNormalText()->getTag(ch) == "")
         getNormalText()->setParameters(ch);
