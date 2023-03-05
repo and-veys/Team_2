@@ -15,6 +15,7 @@ public:
     bool create(QWidget * wnd, bool save);
     bool save(const QString & data);
     bool load(QString & data);
+    bool isTM2File();
 signals:
     void sendWindowCaption(QString);
     void sendMessage(QString);
