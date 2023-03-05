@@ -1,20 +1,18 @@
 #include "edit_window.h"
 #include <QDebug>
-EditWindow::EditWindow(const QString &text, QWidget *parent)
-    : QPlainTextEdit(text, parent)
-{
 
-}
-
-EditWindow::EditWindow(QWidget *parent) :
-     QPlainTextEdit(parent)
-{
-
+EditWindow::EditWindow(QWidget *parent):QPlainTextEdit(parent){
+    QFont f = font();
+    f.setPointSize(12);
+    setFont(f);
+    setCursorWidth(3);
+    setAcceptDrops(false);
 }
 
 void EditWindow::keyPressEvent(QKeyEvent *event)
 {
-    qDebug() << event->key();
+
+    emit keyPressSignal(event);
     bool hotKey = emit isHotKey(event);
     if(hotKey) return;                              //обработка горячих клавиш меню
     bool forbidden = emit isForbiddenKey(event);
@@ -29,6 +27,13 @@ void EditWindow::contextMenuEvent(QContextMenuEvent *event)
     //можно потом и дописать обработку
     return;
     QPlainTextEdit::contextMenuEvent(event);
+}
+
+void EditWindow::focusInEvent(QFocusEvent *event)
+{
+
+    emit cursorPositionChanged();
+    QPlainTextEdit::focusInEvent(event);
 }
 
 

@@ -3,15 +3,9 @@
 
 #include <QMainWindow>
 #include "textdata.h"
+#include "dialogfind.h"
+#include "mainfile.h"
 #include <QDebug>
-
-#include "search_widgets.h"
-#include <memory>
-
-#include "filefunction.h"
-#include "convertdata.h"
-
-//#include "aboutus.h"
 
 class QPlainTextEdit;
 class QPushButton;
@@ -32,43 +26,33 @@ public:
 private:
     EditWindow* mainEdit;
     TextData textData;
-    std::unique_ptr<SearchWidgetString> searchWidgetString;
-    std::unique_ptr<SearchWidgetImportance> searchWidgetImportance;
+    DialogFindString * dlgString;
+    DialogFindHide * dlgHide;
+    DialogFindImportance * dlgImportance;
+    MainFile * mainFile;
 
-    FileFunction *fileFunction;//Вихров
-    //ConvertData *convertData;
-
-    //aboutus *signalAboutUs;
+    bool saveCurrentDocument();
+    void createNewDocument();
+    void setWindowsCaption(const QString & cap = "Новый документ");
+    MainFile * createFile(bool save);
 
 private slots:
     void setImportance(QString tag);
     void hideText(bool hide);
     void selectInformation(QString inf);
     void helpShow(QString type);
-    //TODO ------------ Тесты функциональности, потом удалить
-    void test() {qDebug() << "OK";};
-    void test_2(bool a) {qDebug() << "OK:" << (a?"+":"-");};
-    void test_3(QString a){qDebug() << a;};
-    //---------------------------------------------------
+    void searchText(DialogFind::searchEnum param, const QString & str);
+    void searchImportance(DialogFind::searchEnum param, const QString & str);
+    void searchHide(DialogFind::searchEnum param, const QString & str);
 
-    void search_string_slot();
-    void search_importance_slot();
-
-
-    //Вихров
-public slots:
-    void slotRcvFileData(QString *text);
-    void slotSaveDocument(bool action);
     void slotCreateDocument();
-    void slotCloceDocument();
-    /**/
-    void slotPrintDebug();
-    /**/
-
+    void slotOpenFile();
+    void slotSaveDocument(bool as);
 signals:
-    void signalSaveDocument(QString *text);
-    void signalSaveDocumentAs(QString *text);
-    void signalCloseDocument(QString *text);
+    void sendMessage(QString);
 
+    // QWidget interface
+protected:
+    void closeEvent(QCloseEvent *event);
 };
 #endif // MAINWINDOW_H

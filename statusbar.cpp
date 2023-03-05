@@ -1,102 +1,56 @@
 #include "statusbar.h"
 #include <QKeyEvent>
-#include "windows.h"
-#include "mainwindow.h"
+#include <QPlainTextEdit>
+#include <QTime>
+//#include "windows.h"          //АМВ: не кроссплатформенный подход !!
 
+#include "textdata.h"
 
-Team2StatusBar::Team2StatusBar(QWidget * par):QStatusBar(par)
+Team2StatusBar::Team2StatusBar(QWidget * par, TextData * dt):QStatusBar(par)
 {
-    labelColNum = new QLabel("Col:    "); //позиция курсора в строке
-    labelColNum->setFrameStyle(QFrame::Panel | QFrame::Sunken);
-    labelRowNum = new QLabel("Row:    "); //строка, на которой курсор
-    labelRowNum->setFrameStyle(QFrame::Panel | QFrame::Sunken);
-    labelCapsLock = new QLabel("CAPS");   //индикация нажатой клавиши "CapsLock"
-    labelCapsLock->setFrameStyle(QFrame::Panel | QFrame::Sunken);
-    labelInsert = new QLabel("INS");      //индикация режима вставки/замены
-    labelInsert->setFrameStyle(QFrame::Panel | QFrame::Sunken);
-    labelNumLock = new QLabel("NUM");      //индикация режима вставки/замены
-    labelNumLock->setFrameStyle(QFrame::Panel | QFrame::Sunken);
-    labelMessage = new QLabel("Ready...");//сообщения, подсказки и т.п.
-    labelMessage->setFrameStyle(QFrame::Panel | QFrame::Sunken);
-    this->addWidget(labelMessage,1);
-    this->addWidget(labelColNum);
-    this->addWidget(labelRowNum);
-    this->addPermanentWidget(labelCapsLock);
-    this->addPermanentWidget(labelInsert);
-    this->addPermanentWidget(labelNumLock);
+    auto createLabel = [this](int str=0){
+        QLabel * lb = new QLabel(this);
+        lb->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+        lb->setAlignment(Qt::AlignCenter);
+        lb->setMargin(5);
+        addWidget(lb, str);
+        return lb;
+    };
+    QLabel * mess = createLabel(10);
+    QLabel * imp = createLabel(4);
+    QLabel * bl = createLabel();
+    QLabel * ch = createLabel();
 
+    auto hd = dt->getParameterHide();
+    namesImportance.insert(hd->getTag(), hd->getNameHide());
+    auto im = dt->getSortListImportance();
+    foreach(auto el, im) {
+        namesImportance.insert(el->getTag(), el->getNameImportance());
+    }
+    connect(this, &Team2StatusBar::changeMessage, this,
+            [mess](const QString & s){mess->setText("[" + QTime::currentTime().toString("hh:mm:ss") + "] " + s);});
+    connect(this, &Team2StatusBar::changeCurrentBlock, this, [bl](const QString & s){bl->setText(s);});
+    connect(this, &Team2StatusBar::changePositionInBlock, this, [ch](const QString & s){ch->setText(s);});
+    connect(this, &Team2StatusBar::changeImportance, this, [imp](const QString & s){imp->setText(s);});
 }
-
-void Team2StatusBar::changeLabel(QLabel *lbl, QString str)
-{
-    lbl->setText(str);
-}
-
 void Team2StatusBar::checkKeyEvent(QKeyEvent *event)
 {
-    if (event->key() == VK_CAPITAL)
-    {
-        if (GetKeyState(VK_CAPITAL) == 1)
-        {
-            changeLabel(labelCapsLock, "CAPS");
-        }else{
-            changeLabel(labelCapsLock, "         ");
-        }
-    }
+    //qDebug() << "KEY TEXT:" << event->text();
 }
 
 void Team2StatusBar::checkChangeCursorPosition()
 {
-    changeLabel(labelMessage, "Cursor was change position");
-
+    QPlainTextEdit * wnd = qobject_cast<QPlainTextEdit *>(sender());
+    QTextCursor cursor = wnd->textCursor();
+    auto getT = [](int n, const QString & f){
+        QStringList lst = f.split(" ");
+        lst[1] = QString::number(n).rightJustified(lst.at(1).length(), '0');
+        return lst.join(" ");
+    };
+    QString tag = ParametersTag::getTag(cursor.charFormat());
+    if(namesImportance.contains(tag)) tag = namesImportance.value(tag);
+    else tag = "";
+    emit this->changeCurrentBlock(getT(cursor.blockNumber()+1, "BLOCK: ###"));
+    emit this->changePositionInBlock(getT(cursor.positionInBlock()+1, "POS: #####"));
+    emit this->changeImportance(tag);
 }
-
-void Team2StatusBar::showCursorPosition(int pos)
-{
-    changeLabel(labelColNum, QString::number(pos));
-}
-/*
-
-void MainWindow::checkChangeCursorPosition()
-{
-     Team2StatusBar::showCursorPosition(mainEdit->textCursor().position());
-}
-*/
-
-// only for testing, must be delete
-void Team2StatusBar::testSlotStatusBar(bool item)
-{
-    changeLabel(labelMessage, item?"Hide Text":"UnhideText");
-
-    if (GetKeyState(VK_CAPITAL) == 1)
-        changeLabel(labelCapsLock, "CAPS");
-    else
-        changeLabel(labelCapsLock, "         ");
-    if (GetKeyState(VK_INSERT) == 1)
-        changeLabel(labelInsert, "INS");
-    else
-        changeLabel(labelInsert, "         ");
-    if (GetKeyState(VK_NUMLOCK) == 1)
-        changeLabel(labelNumLock, "NUM");
-    else
-        changeLabel(labelNumLock, "         ");
-
-//    mainEdit::cursorForPosition()
-
-
-
-}
-
-/*
------------- from mainwindow.cpp
-    connect(mainEdit, SIGNAL(keyReleaseEvent(QKeyEvent *event)), stBar, SLOT(checkKeyEvent(QKeyEvent *event)));
-------------
-void Team2StatusBar::checkKeyEvent(QKeyEvent *event)
-{
-    if (GetKeyState(VK_CAPITAL) == 1)
-        changeLabel(labelCapsLock, "CAPS");
-    else
-        changeLabel(labelCapsLock, "         ");
-
-}
-*/

@@ -17,7 +17,6 @@ class TextData : public QObject
     Q_OBJECT
 public:
     TextData();
-    TextData(const TextData&){};
     ~TextData();
 
     enum errorEnum {
@@ -42,13 +41,14 @@ private:
     void sendErrorSignal(errorEnum key);
     ParameterImportance * getNormalText(){return getParameterImportance("!");};
 public:     
-    ParameterImportance * getParameterImportance(const QString &key);
+    ParameterImportance * getParameterImportance(const QString &key);    
     ParameterHide * getParameterHide(){return parametersHide;};
     QString getHiddenString(int key) {return (hiddenString.contains(key) ? hiddenString.value(key): "");};
     QList<ParameterImportance *> getSortListImportance();
     void setImportance(QPlainTextEdit * wnd, QString & tag);
     void hideText(QPlainTextEdit * wnd);
     void showText(QPlainTextEdit * wnd);
+    void clear(){hiddenString.clear();}
 signals:
     void errorSetFormat(QString);
 public slots:
@@ -63,7 +63,7 @@ public:
     ParametersTag(QString tag, QColor col);
     ~ParametersTag();
     QString getTag(){return tag;};
-    QString getTag(QTextCharFormat ch){return ch.property(1).toString();};
+    static QString getTag(QTextCharFormat ch){return ch.property(1).toString();};
     QColor getColor(){return color;};
     void setParameters(QTextCharFormat & ch);
     bool hasCharsFormat(QTextCursor cursor){return isCharFormat(cursor, false);};       //хоть один символ формата объекта
@@ -98,6 +98,7 @@ public:
     QString getReplacingText(){return replacingText;};
     int setParameters(QTextCharFormat & ch);
     int getPlaceCursor(QTextCursor cursor, QTextCharFormat & ch);
+    QString getNameHide(){return "Скрытый текст";};
 private:
     QString replacingText;
     static int id;        //для уникального идентификатора спрятанного текста
