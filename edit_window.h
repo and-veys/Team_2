@@ -19,19 +19,6 @@ signals:
     bool isForbiddenKey(QKeyEvent * event);
     bool isHotKey(QKeyEvent * event);
     void keyPressSignal(QKeyEvent * event);
-
-
-public slots:
-
-
-
-    //TODO ------------ Тесты функциональности сигналов от форм поиска, потом удалить
-    void test_search_prev_slot(const QString& text){qDebug() << "Prev " + text;};
-    void test_search_next_slot(const QString& text){qDebug() << "Next " + text;};
-    //---------------------------------------------------
-
-
-
 };
 
 #endif // EDITWINDOW_H

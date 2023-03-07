@@ -7,6 +7,11 @@ EditWindow::EditWindow(QWidget *parent):QPlainTextEdit(parent){
     setFont(f);
     setCursorWidth(3);
     setAcceptDrops(false);
+
+    QPalette p = palette();
+    p.setColor(QPalette::Inactive, QPalette::Highlight, p.color(QPalette::Active, QPalette::Highlight));
+    p.setColor(QPalette::Inactive, QPalette::HighlightedText, p.color(QPalette::Active, QPalette::HighlightedText));
+    setPalette(p);
 }
 
 void EditWindow::keyPressEvent(QKeyEvent *event)

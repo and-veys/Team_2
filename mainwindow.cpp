@@ -95,7 +95,7 @@ void MainWindow::hideText(bool hide)
 
 void MainWindow::selectInformation(QString inf)
 {
-    QMessageBox::information(this, "You can`t do that", inf);
+    //QMessageBox::information(this, "Нельзя сделать это !!", inf);
 }
 
 void MainWindow::helpShow(QString type)
@@ -106,19 +106,18 @@ void MainWindow::helpShow(QString type)
 
 void MainWindow::searchText(DialogFind::searchEnum param, const QString & str)      //TODO
 {
-    qDebug() << "TEXT" << ((param == DialogFind::NEXT) ? "next" : "prev") << str;
+    textData.searchTextString(mainEdit, str, (param == DialogFind::NEXT));
 
 }
 
-void MainWindow::searchImportance(DialogFind::searchEnum param, const QString &str) //TODO
+void MainWindow::searchImportance(DialogFind::searchEnum param, const QString &str)
 {
-    qDebug() << "IMP" << ((param == DialogFind::NEXT) ? "next" : "prev") << str;
-
+    textData.searchFormatString(mainEdit, str, (param == DialogFind::NEXT));
 }
 
-void MainWindow::searchHide(DialogFind::searchEnum param, const QString &str)   //TODO
+void MainWindow::searchHide(DialogFind::searchEnum param, const QString &str)
 {
-    qDebug() << "HIDE" << ((param == DialogFind::NEXT) ? "next" : "prev") << str;
+    textData.searchFormatString(mainEdit, str, (param == DialogFind::NEXT));
 }
 
 bool MainWindow::saveCurrentDocument()
