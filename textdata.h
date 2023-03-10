@@ -9,6 +9,7 @@
 
 class QPlainTextEdit;
 class QKeyEvent;
+class ParametersTag;
 class ParameterHide;
 class ParameterImportance;
 
@@ -26,6 +27,12 @@ public:
         NOT_HIDE,
         NOT_NORMAL
     };
+    enum searchEnum {
+        FIND_STR = 0,
+        STOP_UP,
+        STOP_DOWN
+    };
+
     enum placeEnum {
         NOT = 1,
         START = 2,
@@ -37,9 +44,12 @@ private:
     QMap<int, QString> hiddenString;               //массив для спрятанных строк
     QMap<QString, ParameterImportance *> parametersImportance;
     QMap<errorEnum, QString> errorTexts;
+    QMap<searchEnum, QString> searchTexts;
     ParameterHide * parametersHide;
     void sendErrorSignal(errorEnum key);
+    void sendSearchSignal(searchEnum key);
     ParameterImportance * getNormalText(){return getParameterImportance("!");};
+    ParametersTag * getParameterFormat(const QTextCursor & cursor);
 public:     
     ParameterImportance * getParameterImportance(const QString &key);    
     ParameterHide * getParameterHide(){return parametersHide;};
@@ -48,7 +58,9 @@ public:
     void setImportance(QPlainTextEdit * wnd, QString & tag);
     void hideText(QPlainTextEdit * wnd);
     void showText(QPlainTextEdit * wnd);
-    void clear(){hiddenString.clear();}
+    void clear(){hiddenString.clear();};
+    void searchFormatString(QPlainTextEdit * wnd, const QString & tag, bool next);
+    void searchTextString(QPlainTextEdit * wnd, const QString & str, bool next);
 signals:
     void errorSetFormat(QString);
 public slots:

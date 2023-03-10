@@ -22,6 +22,10 @@ TextData::TextData() : QObject()
     errorTexts.insert(SOME_SELECT, "Что-то выделено");
     errorTexts.insert(NOT_HIDE, "Это не спратанный текст");
     errorTexts.insert(NOT_NORMAL, "Это не обычный текст");
+
+    searchTexts.insert(FIND_STR, "Строка найдена");
+    searchTexts.insert(STOP_UP, "Поиск достиг верхнего предела");
+    searchTexts.insert(STOP_DOWN, "Поиск достиг нижнего предела");
 }
 
 
@@ -36,6 +40,19 @@ void TextData::sendErrorSignal(errorEnum key)
 {
     QString mess = (errorTexts.contains(key) ? errorTexts.value(key) : "Undefined error");
     emit errorSetFormat(mess);
+}
+
+void TextData::sendSearchSignal(TextData::searchEnum key)
+{
+    QString mess = (searchTexts.contains(key) ? searchTexts.value(key) : "Undefined result");
+    emit errorSetFormat(mess);
+}
+
+ParametersTag *TextData::getParameterFormat(const QTextCursor & cursor)
+{
+    QString tag = ParametersTag::getTag(cursor.charFormat());
+    if(tag == getParameterHide()->getTag()) return getParameterHide();
+    return getParameterImportance(tag);
 }
 
 
@@ -101,6 +118,70 @@ void TextData::showText(QPlainTextEdit *wnd)
     cursor.setPosition(start, QTextCursor::KeepAnchor);
     wnd->setTextCursor(cursor);
 }
+
+void TextData::searchFormatString(QPlainTextEdit *wnd, const QString &tag, bool next)
+{
+    QTextCursor cursor = wnd->textCursor();
+    cursor.clearSelection();
+    ParametersTag * current;
+    bool first = true;
+    while(true) {
+        current = getParameterFormat(cursor);
+        current->findCharsFormat(cursor);
+        if(current->getTag() == tag && !first) {
+            sendSearchSignal(FIND_STR);
+            break;
+        }
+        first = false;
+        if(next) {
+            cursor.clearSelection();
+            if(!cursor.movePosition(QTextCursor::NextCharacter)) {
+                 sendSearchSignal(STOP_DOWN);
+                break;
+            }
+        }
+        else {
+            cursor.setPosition(cursor.selectionStart());
+            if(cursor.position() == 0) {
+                sendSearchSignal(STOP_UP);
+                break;
+            }
+        }
+    }
+    wnd->setTextCursor(cursor);
+}
+
+void TextData::searchTextString(QPlainTextEdit *wnd, const QString &str, bool next)
+{
+    QTextCursor cursor = wnd->textCursor();
+    if(!next && cursor.selectedText() == str)
+        cursor.setPosition(cursor.selectionStart()-1);
+    if(!next && cursor.position() == 0)
+        sendSearchSignal(STOP_UP);
+    else
+    {
+        cursor.clearSelection();
+        QString txt = wnd->toPlainText();
+        int start = (next ? txt.indexOf(str, cursor.position()) : txt.lastIndexOf(str, cursor.position()));
+        if(start == -1) {
+            if(next) {
+                cursor.setPosition(txt.length());
+                sendSearchSignal(STOP_DOWN);
+            }
+            else {
+                cursor.setPosition(0);
+                sendSearchSignal(STOP_UP);
+            }
+        }
+        else {
+            cursor.setPosition(start);
+            cursor.setPosition(start + str.length(), QTextCursor::KeepAnchor);
+            sendSearchSignal(FIND_STR);
+        }
+    }
+    wnd->setTextCursor(cursor);
+}
+
 
 void TextData::hideText(QPlainTextEdit *wnd)
 {
