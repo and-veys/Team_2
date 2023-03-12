@@ -27,7 +27,7 @@ DialogHelp::DialogHelp(QString & type, QWidget * parent) : QDialog(parent)
     QString str = QString::fromUtf8(fl.readAll());
 
     wnd->appendHtml(str);
-
+    wnd->moveCursor(QTextCursor::Start);
 
 }
 
